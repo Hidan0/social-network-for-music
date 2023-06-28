@@ -23,7 +23,7 @@ export const isAuthenticated = async (
     next();
   } catch (error) {
     console.log(error);
-    return res.sendStatus(400);
+    return res.sendStatus(500);
   }
 };
 
@@ -47,6 +47,6 @@ export const isOwner = async (
     next();
   } catch (error) {
     console.log(error);
-    return res.sendStatus(400);
+    return res.sendStatus(500);
   }
 };
