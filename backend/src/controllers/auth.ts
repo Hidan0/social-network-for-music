@@ -59,6 +59,18 @@ export const login = async (req: express.Request, res: express.Response) => {
     if (user.auth.password !== expectedHash) {
       return res.sendStatus(403);
     }
+
+    const salt = randomSalt();
+    user.auth.sessionToken = hashPwd(salt, user._id.toString());
+
+    await user.save();
+
+    res.cookie("SNM-AUTH", user.auth.sessionToken, {
+      domain: "localhost",
+      path: "/",
+    });
+
+    return res.status(200).json(user).end();
   } catch (error) {
     console.log(error);
     return res.sendStatus(400);
