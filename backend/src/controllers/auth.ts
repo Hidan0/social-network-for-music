@@ -7,18 +7,18 @@ export const register = async (req: express.Request, res: express.Response) => {
     const { email, password, username, name } = req.body;
 
     if (!email || !password || !username || !name) {
-      return res.status(400);
+      return res.sendStatus(400);
     }
 
     const existingUserByEmail = await getUserByEmail(email);
 
     if (existingUserByEmail) {
-      return res.status(400);
+      return res.sendStatus(400);
     }
 
     const existingUserByUsername = await getUserByUsername(username);
     if (existingUserByUsername) {
-      return res.status(400);
+      return res.sendStatus(400);
     }
 
     const salt = randomSalt();
@@ -44,7 +44,7 @@ export const login = async (req: express.Request, res: express.Response) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400);
+      return res.sendStatus(400);
     }
 
     const user = await getUserByEmail(email).select(
