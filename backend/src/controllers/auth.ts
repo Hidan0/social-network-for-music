@@ -44,25 +44,40 @@ export const register = async (req: express.Request, res: express.Response) => {
 
 export const login = async (req: express.Request, res: express.Response) => {
   try {
-    const { email, password } = req.body;
+    const { email, username, password } = req.body;
 
-    if (!email || !password) {
-      return res.status(400).json({ message: "Invalid email or password" });
+    if (!password) {
+      return res.status(400).json({ message: "Missing password" });
     }
 
-    const user = await getUserByEmail(email).select(
-      "+auth.salt +auth.password"
-    );
+    let user;
+    if (!username && email) {
+      user = await getUserByEmail(email).select("+auth.salt +auth.password");
 
-    if (!user) {
+      if (!user) {
+        return res
+          .status(400)
+          .json({ message: "An user with this email does not exist" });
+      }
+    } else if (!email && username) {
+      user = await getUserByUsername(username).select(
+        "+auth.salt +auth.password"
+      );
+
+      if (!user) {
+        return res
+          .status(400)
+          .json({ message: "An user with this username does not exist" });
+      }
+    } else {
       return res
         .status(400)
-        .json({ message: "An user with this email does not exist" });
+        .json({ message: "An email or username is required for login" });
     }
 
     const expectedHash = hashPwd(user.auth.salt, password);
     if (user.auth.password !== expectedHash) {
-      return res.status(403).json({ message: "Invalid password" });
+      return res.status(403).json({ message: "Wrong password" });
     }
 
     const salt = randomSalt();
