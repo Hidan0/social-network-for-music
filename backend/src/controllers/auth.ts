@@ -7,18 +7,21 @@ export const register = async (req: express.Request, res: express.Response) => {
     const { email, password, username, name } = req.body;
 
     if (!email || !password || !username || !name) {
-      return res.sendStatus(400);
+      return res.status(400).json({ message: "Invalid input" });
     }
 
     const existingUserByEmail = await getUserByEmail(email);
-
     if (existingUserByEmail) {
-      return res.sendStatus(400);
+      return res
+        .status(400)
+        .json({ message: "An account with this email already exists" });
     }
 
     const existingUserByUsername = await getUserByUsername(username);
     if (existingUserByUsername) {
-      return res.sendStatus(400);
+      return res
+        .status(400)
+        .json({ message: "An account with this username already exists" });
     }
 
     const salt = randomSalt();
@@ -35,7 +38,7 @@ export const register = async (req: express.Request, res: express.Response) => {
     return res.status(201).json(user).end();
   } catch (error) {
     console.log(error);
-    return res.sendStatus(500);
+    return res.status(500).json({ message: error.message });
   }
 };
 
@@ -44,7 +47,7 @@ export const login = async (req: express.Request, res: express.Response) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.sendStatus(400);
+      return res.status(400).json({ message: "Invalid email or password" });
     }
 
     const user = await getUserByEmail(email).select(
@@ -52,12 +55,14 @@ export const login = async (req: express.Request, res: express.Response) => {
     );
 
     if (!user) {
-      return res.sendStatus(400);
+      return res
+        .status(400)
+        .json({ message: "An user with this email does not exist" });
     }
 
     const expectedHash = hashPwd(user.auth.salt, password);
     if (user.auth.password !== expectedHash) {
-      return res.sendStatus(403);
+      return res.status(403).json({ message: "Invalid password" });
     }
 
     const salt = randomSalt();
@@ -73,6 +78,6 @@ export const login = async (req: express.Request, res: express.Response) => {
     return res.status(200).json(user).end();
   } catch (error) {
     console.log(error);
-    return res.sendStatus(500);
+    return res.status(500).json({ message: error.message });
   }
 };
