@@ -3,7 +3,7 @@ import express from "express";
 import { deleteUserById, getUsers } from "../db/Users";
 
 export const getAllUsers = async (
-  req: express.Request,
+  _req: express.Request,
   res: express.Response
 ) => {
   try {
@@ -11,7 +11,7 @@ export const getAllUsers = async (
     return res.status(200).json(users);
   } catch (error) {
     console.log(error);
-    return res.sendStatus(500);
+    return res.status(500).json({ message: error.message });
   }
 };
 
@@ -27,6 +27,6 @@ export const deleteUser = async (
     return res.json(deletedUser);
   } catch (error) {
     console.log(error);
-    return res.sendStatus(500);
+    return res.status(500).json({ message: error.message });
   }
 };
