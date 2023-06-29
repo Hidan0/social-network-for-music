@@ -1,11 +1,33 @@
 import mongoose from "mongoose";
+import regex from "../utils/regex";
 
 const UserSchema = new mongoose.Schema({
-  username: { type: String, required: true, unique: true },
-  name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
+  username: {
+    type: String,
+    required: true,
+    unique: true,
+    match: [
+      regex.username,
+      `Please insert a valid username: ${regex.usernameDescr}`,
+    ],
+  },
+  name: {
+    type: String,
+    required: true,
+    match: [regex.name, `Pleanse insert a valid name: ${regex.nameDescr}`],
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    match: [regex.email, `Please insert a valid email ${regex.emailDescr}`],
+  },
   auth: {
-    password: { type: String, required: true, select: false },
+    password: {
+      type: String,
+      required: true,
+      select: false,
+    },
     salt: { type: String, select: false },
     sessionToken: { type: String, select: false },
   },
