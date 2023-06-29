@@ -11,19 +11,19 @@ export const isAuthenticated = async (
     const sessionToken = req.cookies["SNM-AUTH"];
 
     if (!sessionToken) {
-      return res.sendStatus(403);
+      return res.status(403).json({ message: "Unauthorized" });
     }
 
     const existingUser = await getUserBySessionToken(sessionToken);
     if (!existingUser) {
-      return res.sendStatus(403);
+      return res.status(403).json({ message: "Session expired" });
     }
 
     merge(req, { identity: existingUser });
     next();
   } catch (error) {
     console.log(error);
-    return res.sendStatus(500);
+    return res.status(500).json({ message: error.message });
   }
 };
 
@@ -37,16 +37,18 @@ export const isOwner = async (
     const currentUserId = get(req, "identity._id") as string;
 
     if (!currentUserId) {
-      return res.sendStatus(403);
+      return res.status(403).json({ message: "Not authenticated" });
     }
 
     if (currentUserId.toString() !== id) {
-      return res.sendStatus(403);
+      return res
+        .status(403)
+        .json({ message: "You are not the owner of this resource" });
     }
 
     next();
   } catch (error) {
     console.log(error);
-    return res.sendStatus(500);
+    return res.status(500).json({ message: error.message });
   }
 };
