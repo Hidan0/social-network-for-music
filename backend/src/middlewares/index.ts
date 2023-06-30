@@ -1,5 +1,4 @@
 import express from "express";
-import { get, merge } from "lodash";
 import { getUserBySessionToken } from "../db/Users";
 
 export const isAuthenticated = async (
@@ -19,7 +18,7 @@ export const isAuthenticated = async (
       return res.status(403).json({ message: "Session expired" });
     }
 
-    merge(req, { identity: existingUser });
+    req.identity = existingUser;
     next();
   } catch (error: any) {
     console.log(error);
@@ -34,7 +33,7 @@ export const isOwner = async (
 ) => {
   try {
     const { id } = req.params;
-    const currentUserId = get(req, "identity._id") as unknown as string;
+    const currentUserId = req.identity?._id;
 
     if (!currentUserId) {
       return res.status(403).json({ message: "Not authenticated" });

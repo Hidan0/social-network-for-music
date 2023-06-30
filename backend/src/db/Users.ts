@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import regex from "../utils/regex";
 
-interface IUser {
+export interface IUser {
   username: string;
   name: string;
   email: string;
