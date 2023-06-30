@@ -9,9 +9,9 @@ const name = /^[\w\ ]{4,25}$/;
 const nameDescr = "4-25 characters, letters, numbers, spaces";
 
 const password =
-  /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,40}$/;
+  /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&^])[A-Za-z\d@$!%*#?&^]{8,40}$/;
 const passwordDescr =
-  "8-40 characters, at least one uppercase, one lowercase, one number and one special character (e.g. @$!%*#?&)";
+  "8-40 characters, at least one uppercase, one lowercase, one number and one special character (e.g. @$!%*#?&^)";
 
 export default {
   email,

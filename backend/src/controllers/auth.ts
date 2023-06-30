@@ -1,13 +1,25 @@
 import { createUser, getUserByEmail, getUserByUsername } from "../db/Users";
 import express from "express";
 import { hashPwd, randomSalt } from "../utils";
+import {
+  validateLoginUserWithEmail,
+  validateLoginUserWithUsername,
+  validateRegisterUser,
+} from "../validator";
 
 export const register = async (req: express.Request, res: express.Response) => {
   try {
     const { email, password, username, name } = req.body;
 
-    if (!email || !password || !username || !name) {
-      return res.status(400).json({ message: "Invalid input" });
+    const { isValid, error } = validateRegisterUser({
+      email,
+      password,
+      username,
+      name,
+    });
+
+    if (!isValid) {
+      return res.status(400).json({ message: error });
     }
 
     const existingUserByEmail = await getUserByEmail(email);
@@ -46,12 +58,16 @@ export const login = async (req: express.Request, res: express.Response) => {
   try {
     const { email, username, password } = req.body;
 
-    if (!password) {
-      return res.status(400).json({ message: "Missing password" });
-    }
-
     let user;
     if (!username && email) {
+      let { isValid, error } = validateLoginUserWithEmail({
+        email,
+        password,
+      });
+
+      if (!isValid) {
+        return res.status(400).json({ message: error });
+      }
       user = await getUserByEmail(email).select("+auth.salt +auth.password");
 
       if (!user) {
@@ -60,6 +76,15 @@ export const login = async (req: express.Request, res: express.Response) => {
           .json({ message: "An user with this email does not exist" });
       }
     } else if (!email && username) {
+      let { isValid, error } = validateLoginUserWithUsername({
+        username,
+        password,
+      });
+
+      if (!isValid) {
+        return res.status(400).json({ message: error });
+      }
+
       user = await getUserByUsername(username).select(
         "+auth.salt +auth.password"
       );
