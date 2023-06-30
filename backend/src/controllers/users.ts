@@ -9,7 +9,7 @@ export const getAllUsers = async (
   try {
     const users = await getUsers();
     return res.status(200).json(users);
-  } catch (error) {
+  } catch (error: any) {
     console.log(error);
     return res.status(500).json({ message: error.message });
   }
@@ -25,7 +25,7 @@ export const deleteUser = async (
     const deletedUser = await deleteUserById(id);
 
     return res.json(deletedUser);
-  } catch (error) {
+  } catch (error: any) {
     console.log(error);
     return res.status(500).json({ message: error.message });
   }

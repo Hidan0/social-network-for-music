@@ -21,7 +21,7 @@ export const isAuthenticated = async (
 
     merge(req, { identity: existingUser });
     next();
-  } catch (error) {
+  } catch (error: any) {
     console.log(error);
     return res.status(500).json({ message: error.message });
   }
@@ -34,7 +34,7 @@ export const isOwner = async (
 ) => {
   try {
     const { id } = req.params;
-    const currentUserId = get(req, "identity._id") as string;
+    const currentUserId = get(req, "identity._id") as unknown as string;
 
     if (!currentUserId) {
       return res.status(403).json({ message: "Not authenticated" });
@@ -47,7 +47,7 @@ export const isOwner = async (
     }
 
     next();
-  } catch (error) {
+  } catch (error: any) {
     console.log(error);
     return res.status(500).json({ message: error.message });
   }

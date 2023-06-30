@@ -1,7 +1,20 @@
 import mongoose from "mongoose";
 import regex from "../utils/regex";
 
-const UserSchema = new mongoose.Schema({
+interface IUser {
+  username: string;
+  name: string;
+  email: string;
+  auth: {
+    password: string;
+    salt: string;
+    sessionToken: string;
+  };
+  preferences: string[];
+  musical_groups: string[];
+}
+
+const UserSchema = new mongoose.Schema<IUser>({
   username: {
     type: String,
     required: true,
