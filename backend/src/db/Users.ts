@@ -10,8 +10,8 @@ export interface IUser {
     salt: string;
     sessionToken: string;
   };
-  preferences: string[];
-  musical_groups: string[];
+  favorite_genres: string[];
+  favorite_artists: string[];
 }
 
 const UserSchema = new mongoose.Schema<IUser>({
@@ -44,8 +44,8 @@ const UserSchema = new mongoose.Schema<IUser>({
     salt: { type: String, select: false },
     sessionToken: { type: String, select: false },
   },
-  preferences: { type: [String], default: [] },
-  musical_groups: { type: [String], default: [] },
+  favorite_genres: { type: [String], default: [] },
+  favorite_artists: { type: [String], default: [] },
 });
 
 export const UserModel = mongoose.model("User", UserSchema);
