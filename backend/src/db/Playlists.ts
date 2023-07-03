@@ -65,9 +65,9 @@ export const getPlaylistsByCreator = (
   creatorId: mongoose.Schema.Types.ObjectId
 ) => PlaylistModel.find({ creator: creatorId });
 export const getPlaylistById = (id: string) => PlaylistModel.findById(id);
-export const createPlaylist = (values: Record<string, any>) => {
+export const createPlaylist = (values: Record<string, any>) =>
   new PlaylistModel(values).save().then((playlist) => playlist.toObject());
-};
+
 export const deletePlaylistById = (id: string) =>
   PlaylistModel.findByIdAndDelete(id);
 export const updatePlaylistById = (id: string, values: Record<string, any>) =>
