@@ -61,7 +61,8 @@ const PlaylistSchema = new mongoose.Schema<IPlaylist>({
 
 export const PlaylistModel = mongoose.model("Playlist", PlaylistSchema);
 
-export const getPlaylists = () => PlaylistModel.find();
+export const getAllPlaylists = async (id: string) =>
+  PlaylistModel.find({ $or: [{ followers: { $in: id } }, { author: id }] });
 
 export const getPublicPlaylists = () =>
   PlaylistModel.find({ isPrivate: false }).populate("author", "-_id username");

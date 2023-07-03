@@ -1,6 +1,10 @@
 import express from "express";
 import { validateCreatePlaylist } from "../validator";
-import { createPlaylist, getPublicPlaylists } from "../db/Playlists";
+import {
+  createPlaylist,
+  getPublicPlaylists,
+  getAllPlaylists,
+} from "../db/Playlists";
 
 export const createNewPlaylist = async (
   req: express.Request,
@@ -39,11 +43,29 @@ export const createNewPlaylist = async (
 };
 
 export const getPubPlaylists = async (
-  req: express.Request,
+  _req: express.Request,
   res: express.Response
 ) => {
   try {
     const playlists = await getPublicPlaylists();
+    return res.status(200).json(playlists).end();
+  } catch (error: any) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+export const getPlaylists = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  try {
+    const userId = req.identity?._id;
+
+    if (!userId) {
+      return res.status(403).json({ message: "Not authenticated" });
+    }
+
+    const playlists = await getAllPlaylists(userId.toString());
     return res.status(200).json(playlists).end();
   } catch (error: any) {
     return res.status(500).json({ message: error.message });
