@@ -1,6 +1,6 @@
 import express from "express";
 import { validateCreatePlaylist } from "../validator";
-import { createPlaylist } from "../db/Playlists";
+import { createPlaylist, getPublicPlaylists } from "../db/Playlists";
 
 export const createNewPlaylist = async (
   req: express.Request,
@@ -29,10 +29,22 @@ export const createNewPlaylist = async (
       description,
       tags,
       isPrivate,
-      creator: userId,
+      author: userId,
     });
 
     return res.status(201).json(playlist).end();
+  } catch (error: any) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+export const getPubPlaylists = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  try {
+    const playlists = await getPublicPlaylists();
+    return res.status(200).json(playlists).end();
   } catch (error: any) {
     return res.status(500).json({ message: error.message });
   }

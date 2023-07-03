@@ -7,7 +7,7 @@ export interface IPlaylist {
   tags: string[];
   isPrivate: boolean;
   tracks: string[];
-  creator: mongoose.Schema.Types.ObjectId;
+  author: mongoose.Schema.Types.ObjectId;
   followers: mongoose.Schema.Types.ObjectId[];
 }
 
@@ -48,8 +48,9 @@ const PlaylistSchema = new mongoose.Schema<IPlaylist>({
     type: [String],
     default: [],
   },
-  creator: {
+  author: {
     type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
     required: true,
   },
   followers: {
@@ -61,6 +62,10 @@ const PlaylistSchema = new mongoose.Schema<IPlaylist>({
 export const PlaylistModel = mongoose.model("Playlist", PlaylistSchema);
 
 export const getPlaylists = () => PlaylistModel.find();
+
+export const getPublicPlaylists = () =>
+  PlaylistModel.find({ isPrivate: false }).populate("author", "-_id username");
+
 export const getPlaylistsByCreator = (
   creatorId: mongoose.Schema.Types.ObjectId
 ) => PlaylistModel.find({ creator: creatorId });
