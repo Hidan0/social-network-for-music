@@ -50,6 +50,7 @@ export const getPubPlaylists = async (
     const playlists = await getPublicPlaylists();
     return res.status(200).json(playlists).end();
   } catch (error: any) {
+    console.log(error);
     return res.status(500).json({ message: error.message });
   }
 };
@@ -68,6 +69,18 @@ export const getPlaylists = async (
     const playlists = await getAllPlaylists(userId.toString());
     return res.status(200).json(playlists).end();
   } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+export const addCollaborator = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  try {
+  } catch (error: any) {
+    console.log(error);
     return res.status(500).json({ message: error.message });
   }
 };

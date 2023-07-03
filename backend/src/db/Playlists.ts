@@ -8,7 +8,7 @@ export interface IPlaylist {
   isPrivate: boolean;
   tracks: string[];
   author: mongoose.Schema.Types.ObjectId;
-  followers: mongoose.Schema.Types.ObjectId[];
+  collaborators: mongoose.Schema.Types.ObjectId[];
 }
 
 const PlaylistSchema = new mongoose.Schema<IPlaylist>({
@@ -53,7 +53,7 @@ const PlaylistSchema = new mongoose.Schema<IPlaylist>({
     ref: "User",
     required: true,
   },
-  followers: {
+  collaborators: {
     type: [mongoose.Schema.Types.ObjectId],
     default: [],
   },
@@ -62,7 +62,7 @@ const PlaylistSchema = new mongoose.Schema<IPlaylist>({
 export const PlaylistModel = mongoose.model("Playlist", PlaylistSchema);
 
 export const getAllPlaylists = async (id: string) =>
-  PlaylistModel.find({ $or: [{ followers: { $in: id } }, { author: id }] });
+  PlaylistModel.find({ $or: [{ collaborators: { $in: id } }, { author: id }] });
 
 export const getPublicPlaylists = () =>
   PlaylistModel.find({ isPrivate: false }).populate("author", "-_id username");

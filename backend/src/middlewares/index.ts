@@ -1,5 +1,6 @@
 import express from "express";
 import { getUserBySessionToken } from "../db/Users";
+import { getPlaylistById } from "../db/Playlists";
 
 export const isAuthenticated = async (
   req: express.Request,
@@ -43,6 +44,41 @@ export const isOwner = async (
       return res
         .status(403)
         .json({ message: "You are not the owner of this resource" });
+    }
+
+    next();
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+export const isPlaylistOwnerOrCollaborator = async (
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) => {
+  try {
+    const { playlistId } = req.params;
+    const userId = req.identity?._id;
+
+    if (!userId) {
+      return res.status(403).json({ message: "Not authenticated" });
+    }
+
+    const playlist = await getPlaylistById(playlistId);
+    if (!playlist) {
+      return res.status(404).json({ message: "Playlist not found" });
+    }
+
+    if (playlist.author.toString() === userId.toString()) {
+      req.isAuthor = true;
+    } else if (playlist.collaborators.find((id) => id === userId)) {
+      req.isAuthor = false;
+    } else {
+      return res.status(403).json({
+        message: "You are not the author or a collaborator to the playlist",
+      });
     }
 
     next();
