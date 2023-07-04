@@ -53,7 +53,7 @@ export const isOwner = async (
   }
 };
 
-export const isPlaylistOwnerOrCollaborator = async (
+export const isPlaylistAuthor = async (
   req: express.Request,
   res: express.Response,
   next: express.NextFunction
@@ -71,16 +71,13 @@ export const isPlaylistOwnerOrCollaborator = async (
       return res.status(404).json({ message: "Playlist not found" });
     }
 
-    if (playlist.author.toString() === userId.toString()) {
-      req.isAuthor = true;
-    } else if (playlist.collaborators.find((id) => id === userId)) {
-      req.isAuthor = false;
-    } else {
+    if (playlist.author.toString() !== userId.toString()) {
       return res.status(403).json({
-        message: "You are not the author or a collaborator to the playlist",
+        message: "You are not the author if the playlist",
       });
     }
 
+    req.playlist = playlist;
     next();
   } catch (error: any) {
     console.log(error);
