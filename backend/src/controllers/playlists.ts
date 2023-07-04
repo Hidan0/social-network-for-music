@@ -45,6 +45,16 @@ export const createNewPlaylist = async (
   }
 };
 
+export const deletePlaylist = async (
+  req: express.Request,
+  res: express.Response
+) => {};
+
+export const editPlaylist = async (
+  req: express.Request,
+  res: express.Response
+) => {};
+
 export const getPubPlaylists = async (
   _req: express.Request,
   res: express.Response
