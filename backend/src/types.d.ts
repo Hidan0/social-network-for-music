@@ -7,8 +7,8 @@ export {};
 declare global {
   namespace Express {
     export interface Request {
-      identity?: mongoose.Document<any, {}, IUser>;
-      playlist?: mongoose.Document<any, {}, IPlaylist>;
+      identity: mongoose.Document<any, {}, IUser>;
+      playlist: mongoose.Document<any, {}, IPlaylist>;
     }
   }
 }
