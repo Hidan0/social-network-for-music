@@ -79,6 +79,14 @@ export const addCollaboratorToPlaylist = (id: string, collaborator: string) =>
     $push: { collaborators: collaborator },
   });
 
+export const removeCollaboratorFromPlaylist = (
+  id: string,
+  collaborator: string
+) =>
+  PlaylistModel.findByIdAndUpdate(id, {
+    $pull: { collaborators: collaborator },
+  });
+
 export const deletePlaylistById = (id: string) =>
   PlaylistModel.findByIdAndDelete(id);
 export const updatePlaylistById = (id: string, values: Record<string, any>) =>

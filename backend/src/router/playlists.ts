@@ -5,6 +5,7 @@ import {
   createNewPlaylist,
   getPubPlaylists,
   addCollaborator,
+  removeCollaborator,
 } from "../controllers/playlists";
 
 export default (router: express.Router) => {
@@ -17,5 +18,11 @@ export default (router: express.Router) => {
     isAuthenticated,
     isPlaylistAuthor,
     addCollaborator
+  );
+  router.delete(
+    "/playlists/:playlistId/collaborator/:collId",
+    isAuthenticated,
+    isPlaylistAuthor,
+    removeCollaborator
   );
 };

@@ -5,6 +5,7 @@ import {
   getPublicPlaylists,
   getAllPlaylists,
   addCollaboratorToPlaylist,
+  removeCollaboratorFromPlaylist,
 } from "../db/Playlists";
 import { getUserById } from "../db/Users";
 
@@ -98,6 +99,38 @@ export const addCollaborator = async (
     }
 
     const updatedPlaylist = await addCollaboratorToPlaylist(playlistId, collId);
+    return res.status(200).json(updatedPlaylist).end();
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+export const removeCollaborator = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  try {
+    const { playlistId, collId } = req.params;
+
+    if (req.identity?._id.toString() === collId) {
+      return res.status(400).json({ message: "You are the owner" });
+    }
+
+    const user = await getUserById(collId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const playlist = req.playlist!.toObject();
+    if (!playlist.collaborators.find((c) => c.toString() === collId)) {
+      return res.status(400).json({ message: "Not a collaborator" });
+    }
+
+    const updatedPlaylist = await removeCollaboratorFromPlaylist(
+      playlistId,
+      collId
+    );
     return res.status(200).json(updatedPlaylist).end();
   } catch (error: any) {
     console.log(error);
