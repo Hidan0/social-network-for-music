@@ -9,6 +9,7 @@ import {
   deletePlaylistById,
   updatePlaylistById,
   getPlaylistById,
+  pushTrackToPlaylist,
 } from "../db/Playlists";
 import { getUserById } from "../db/Users";
 
@@ -220,7 +221,26 @@ export const getTracksFromPlaylist = async (
 export const addTrackToPlaylist = async (
   req: express.Request,
   res: express.Response
-) => {};
+) => {
+  try {
+    const { track } = req.body;
+
+    if (!track) {
+      return res.status(400).json({ message: "No track provided" });
+    }
+
+    const playlist = await pushTrackToPlaylist(
+      req.playlist._id.toString(),
+      track
+    );
+
+    return res.status(200).json(playlist).end();
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
 export const deleteTrackFromPlaylist = async (
   req: express.Request,
   res: express.Response

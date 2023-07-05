@@ -44,7 +44,7 @@ export const isPlaylistAuthorOrCollaborator = async (
     }
 
     if (
-      playlist.author.toString() !== userId.toString() ||
+      playlist.author.toString() !== userId.toString() &&
       !playlist.collaborators.includes(userId.toString())
     ) {
       return res.status(403).json({
