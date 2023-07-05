@@ -10,6 +10,7 @@ import {
   updatePlaylistById,
   getPlaylistById,
   pushTrackToPlaylist,
+  removeTrackFromPlaylist,
 } from "../db/Playlists";
 import { getUserById } from "../db/Users";
 
@@ -224,9 +225,14 @@ export const addTrackToPlaylist = async (
 ) => {
   try {
     const { track } = req.body;
+    const playlistObj = req.playlist.toObject();
 
     if (!track) {
       return res.status(400).json({ message: "No track provided" });
+    }
+
+    if (playlistObj.tracks.includes(track)) {
+      return res.status(400).json({ message: "Track already in playlist" });
     }
 
     const playlist = await pushTrackToPlaylist(
@@ -244,4 +250,23 @@ export const addTrackToPlaylist = async (
 export const deleteTrackFromPlaylist = async (
   req: express.Request,
   res: express.Response
-) => {};
+) => {
+  try {
+    const { trackId } = req.params;
+    const playlistObj = req.playlist.toObject();
+
+    if (!playlistObj.tracks.includes(trackId)) {
+      return res.status(400).json({ message: "Track not in playlist" });
+    }
+
+    const playlist = await removeTrackFromPlaylist(
+      req.playlist._id.toString(),
+      trackId
+    );
+
+    return res.status(200).json(playlist).end();
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({ message: error.message });
+  }
+};

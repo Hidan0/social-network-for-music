@@ -94,3 +94,5 @@ export const updatePlaylistById = (id: string, values: Record<string, any>) =>
 
 export const pushTrackToPlaylist = (id: string, track: string) =>
   PlaylistModel.findByIdAndUpdate(id, { $addToSet: { tracks: track } });
+export const removeTrackFromPlaylist = (id: string, track: string) =>
+  PlaylistModel.findByIdAndUpdate(id, { $pull: { tracks: track } });
