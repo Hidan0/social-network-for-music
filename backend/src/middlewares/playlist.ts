@@ -7,10 +7,10 @@ export const isPlaylistAuthor = async (
   next: express.NextFunction
 ) => {
   try {
-    const { playlistId } = req.params;
+    const { id } = req.params;
     const userId = req.identity._id;
 
-    const playlist = await getPlaylistById(playlistId);
+    const playlist = await getPlaylistById(id);
     if (!playlist) {
       return res.status(404).json({ message: "Playlist not found" });
     }
@@ -35,10 +35,10 @@ export const isPlaylistAuthorOrCollaborator = async (
   next: express.NextFunction
 ) => {
   try {
-    const { playlistId } = req.params;
+    const { id } = req.params;
     const userId = req.identity._id;
 
-    const playlist = await getPlaylistById(playlistId);
+    const playlist = await getPlaylistById(id);
     if (!playlist) {
       return res.status(404).json({ message: "Playlist not found" });
     }
@@ -47,11 +47,9 @@ export const isPlaylistAuthorOrCollaborator = async (
       playlist.author.toString() !== userId.toString() ||
       !playlist.collaborators.includes(userId.toString())
     ) {
-      return res
-        .status(403)
-        .json({
-          message: "You are not the author or collaborator of the playlist",
-        });
+      return res.status(403).json({
+        message: "You are not the author or collaborator of the playlist",
+      });
     }
 
     req.playlist = playlist;

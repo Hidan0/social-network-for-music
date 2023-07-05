@@ -16,13 +16,13 @@ export default (router: express.Router) => {
   router.get("/playlists/public", getPubPlaylists);
 
   router.put(
-    "/playlists/:playlistId/collaborator/:collId",
+    "/playlists/:id/collaborator/:collId",
     isAuthenticated,
     isPlaylistAuthor,
     addCollaborator
   );
   router.delete(
-    "/playlists/:playlistId/collaborator/:collId",
+    "/playlists/:id/collaborator/:collId",
     isAuthenticated,
     isPlaylistAuthor,
     removeCollaborator

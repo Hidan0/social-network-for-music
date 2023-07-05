@@ -6,6 +6,8 @@ import {
   getAllPlaylists,
   addCollaboratorToPlaylist,
   removeCollaboratorFromPlaylist,
+  deletePlaylistById,
+  updatePlaylistById,
 } from "../db/Playlists";
 import { getUserById } from "../db/Users";
 
@@ -14,7 +16,7 @@ export const createNewPlaylist = async (
   res: express.Response
 ) => {
   try {
-    const userId = req.identity?._id;
+    const userId = req.identity._id;
     const { title, description, tags, isPrivate } = req.body;
 
     const { isValid, error } = validateCreatePlaylist({
@@ -41,6 +43,7 @@ export const createNewPlaylist = async (
 
     return res.status(201).json(playlist).end();
   } catch (error: any) {
+    console.log(error);
     return res.status(500).json({ message: error.message });
   }
 };
@@ -48,12 +51,49 @@ export const createNewPlaylist = async (
 export const deletePlaylist = async (
   req: express.Request,
   res: express.Response
-) => {};
+) => {
+  try {
+    const { id } = req.params;
+
+    const deletedPlaylist = await deletePlaylistById(id);
+
+    return res.json(deletedPlaylist);
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({ message: error.message });
+  }
+};
 
 export const editPlaylist = async (
   req: express.Request,
   res: express.Response
-) => {};
+) => {
+  try {
+    const { id } = req.params;
+    const { title, description, tags, isPrivate } = req.body;
+
+    const { isValid, error } = validateCreatePlaylist({
+      title,
+      description,
+      tags,
+    });
+
+    if (!isValid) {
+      return res.status(400).json({ message: error });
+    }
+
+    const playlist = await updatePlaylistById(id, {
+      title,
+      description,
+      tags,
+      isPrivate,
+    });
+    return res.status(200).json(playlist).end();
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({ message: error.message });
+  }
+};
 
 export const getPubPlaylists = async (
   _req: express.Request,
@@ -73,7 +113,7 @@ export const getPlaylists = async (
   res: express.Response
 ) => {
   try {
-    const userId = req.identity?._id;
+    const userId = req.identity._id;
 
     if (!userId) {
       return res.status(403).json({ message: "Not authenticated" });
@@ -94,7 +134,7 @@ export const addCollaborator = async (
   try {
     const { playlistId, collId } = req.params;
 
-    if (req.identity?._id.toString() === collId) {
+    if (req.identity._id.toString() === collId) {
       return res.status(400).json({ message: "You are the owner" });
     }
 
@@ -103,7 +143,7 @@ export const addCollaborator = async (
       return res.status(404).json({ message: "User not found" });
     }
 
-    const playlist = req.playlist!.toObject();
+    const playlist = req.playlist.toObject();
     if (playlist.collaborators.find((c) => c.toString() === collId)) {
       return res.status(400).json({ message: "Already a collaborator" });
     }
@@ -123,7 +163,7 @@ export const removeCollaborator = async (
   try {
     const { playlistId, collId } = req.params;
 
-    if (req.identity?._id.toString() === collId) {
+    if (req.identity._id.toString() === collId) {
       return res.status(400).json({ message: "You are the owner" });
     }
 
@@ -132,7 +172,7 @@ export const removeCollaborator = async (
       return res.status(404).json({ message: "User not found" });
     }
 
-    const playlist = req.playlist!.toObject();
+    const playlist = req.playlist.toObject();
     if (!playlist.collaborators.find((c) => c.toString() === collId)) {
       return res.status(400).json({ message: "Not a collaborator" });
     }
