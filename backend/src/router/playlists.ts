@@ -1,5 +1,9 @@
 import express from "express";
-import { isAuthenticated, isPlaylistAuthor } from "../middlewares";
+import {
+  isAuthenticated,
+  isPlaylistAuthor,
+  isPlaylistAuthorOrCollaborator,
+} from "../middlewares";
 import {
   getPlaylists,
   createNewPlaylist,
@@ -8,6 +12,9 @@ import {
   removeCollaborator,
   deletePlaylist,
   editPlaylist,
+  addTrackToPlaylist,
+  getTracksFromPlaylist,
+  deleteTrackFromPlaylist,
 } from "../controllers/playlists";
 
 export default (router: express.Router) => {
@@ -41,7 +48,17 @@ export default (router: express.Router) => {
     editPlaylist
   );
 
-  router.post("/playlist/:id/tracks");
-  router.get("/playlist/:id/tracks");
-  router.delete("/playlist/:id/tracks/:trackId");
+  router.post(
+    "/playlists/:id/tracks",
+    isAuthenticated,
+    isPlaylistAuthorOrCollaborator,
+    addTrackToPlaylist
+  );
+  router.get("/playlists/:id/tracks", isAuthenticated, getTracksFromPlaylist);
+  router.delete(
+    "/playlists/:id/tracks/:trackId",
+    isAuthenticated,
+    isPlaylistAuthorOrCollaborator,
+    deleteTrackFromPlaylist
+  );
 };
