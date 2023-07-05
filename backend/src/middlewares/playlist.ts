@@ -17,7 +17,7 @@ export const isPlaylistAuthor = async (
 
     if (playlist.author.toString() !== userId.toString()) {
       return res.status(403).json({
-        message: "You are not the author if the playlist",
+        message: "You are not the author of the playlist",
       });
     }
 
