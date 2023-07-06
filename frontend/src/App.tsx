@@ -1,12 +1,14 @@
 import { Route, Routes } from "@solidjs/router";
 import type { Component } from "solid-js";
 
+import Register from "./pages/Register";
+
 const App: Component = () => {
   return (
     <>
-      <h1>Hello World</h1>
       <Routes>
-        <Route path="/" component={App} /> {/* 👈 Define the home page route */}
+        <Route path="/" component={App} />
+        <Route path="/register" component={Register} />
       </Routes>
     </>
   );
