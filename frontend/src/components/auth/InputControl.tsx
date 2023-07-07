@@ -1,9 +1,10 @@
 import { JSX, splitProps } from "solid-js";
+import { FloatingLabel } from "solid-bootstrap";
 
 type TextInputProps = {
   name: string;
   type: "text" | "email" | "tel" | "password" | "url" | "date";
-  label?: string;
+  label: string;
   placeholder?: string;
   value: string | undefined;
   error: string;
@@ -19,26 +20,23 @@ export function InputControl(props: TextInputProps) {
 
   return (
     <div class="mb-3">
-      {props.label && (
-        <label class="form-label" for={props.name}>
-          {props.label}
-        </label>
-      )}
-      <input
-        class={`form-control ${!!props.error ? "is-invalid" : ""}`}
-        {...inputProps}
-        id={props.name}
-        value={props.value || ""}
-        aria-invalid={!!props.error}
-      />
-      {props.error && (
-        <div
-          class={`${!!props.error ? "in" : ""}valid-feedback`}
-          id={`${props.name}-error`}
-        >
-          {props.error}
-        </div>
-      )}
+      <FloatingLabel controlId={props.name} label={props.label}>
+        <input
+          class={`form-control ${!!props.error ? "is-invalid" : ""}`}
+          {...inputProps}
+          id={props.name}
+          value={props.value || ""}
+          aria-invalid={!!props.error}
+        />
+        {props.error && (
+          <div
+            class={`${!!props.error ? "in" : ""}valid-feedback`}
+            id={`${props.name}-error`}
+          >
+            {props.error}
+          </div>
+        )}
+      </FloatingLabel>
     </div>
   );
 }
