@@ -146,7 +146,7 @@ const RegisterScreen: Component = () => {
       </Row>
       <Row>
         <p class="text-secondary mt-2">
-          Already have and account?
+          Already have and account?{" "}
           <A class="fw-bold" href="/login">
             Login
           </A>
