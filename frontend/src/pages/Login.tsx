@@ -3,25 +3,9 @@ import { Container, Button, Row, Col } from "solid-bootstrap";
 import { z } from "zod";
 import { createForm, zodForm, SubmitHandler } from "@modular-forms/solid";
 import { InputControl } from "../components/auth/InputControl";
+import { loginSchema } from "../utils/validations_schema";
 import { A } from "@solidjs/router";
 
-const loginSchema = z.object({
-  email: z
-    .string()
-    .email({ message: "Invalid email address: local-name@domain" })
-    .optional(),
-  password: z
-    .string()
-    .min(8, { message: "Password must be at least 8 characters long" })
-    .max(40, { message: "Password must be less than 40 characters long" })
-    .regex(
-      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&^])[A-Za-z\d@$!%*#?&^]{8,40}$/,
-      {
-        message:
-          "Password must contain at least one letter, number, and special character",
-      }
-    ),
-});
 type LoginForm = z.infer<typeof loginSchema>;
 
 const LoginScreen: Component = () => {
