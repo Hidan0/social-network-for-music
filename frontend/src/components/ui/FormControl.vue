@@ -1,14 +1,10 @@
 <script setup lang="ts">
-const props = defineProps({
+defineProps({
   type: {
     type: String,
     default: "text",
   },
   id: {
-    type: String,
-    required: true,
-  },
-  placeholder: {
     type: String,
     required: true,
   },
@@ -25,7 +21,7 @@ const props = defineProps({
     type: Boolean,
   },
   validMessage: {
-    default: "Looks good!",
+    default: "",
     type: String,
   },
   invalid: {
@@ -41,19 +37,34 @@ const props = defineProps({
     type: String,
   },
 });
+
+const emit = defineEmits(["update:value"]);
+
+const onInput = (evt: Event) => {
+  const input = evt.target as HTMLInputElement;
+
+  emit("update:value", input.value);
+};
 </script>
 
 <template>
-  <div class="form-floating mb-3">
-    <input
-      :type="type"
-      class="form-control"
-      :id="id"
-      :required="required"
-      :placeholder="placeholder"
-      :value="value"
-    />
-    <label :for="id">{{ label }}</label>
+  <div class="mb-3">
+    <div
+      class="form-floating"
+      :class="{ 'is-valid': valid, 'is-invalid': invalid }"
+    >
+      <input
+        :type="type"
+        class="form-control"
+        :class="{ 'is-valid': valid, 'is-invalid': invalid }"
+        :id="id"
+        :required="required"
+        :placeholder="label"
+        :value="value"
+        @input="onInput"
+      />
+      <label :for="id">{{ label }}</label>
+    </div>
     <div v-if="valid" class="valid-feedback">
       {{ validMessage }}
     </div>

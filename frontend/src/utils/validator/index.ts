@@ -38,10 +38,13 @@ export const registerSchema = z
     password: passwordSchema,
     confirmPassword: z.string(),
   })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ["confirmPassword"],
-  });
+  .refine(
+    (data) => data.confirmPassword && data.password === data.confirmPassword,
+    {
+      message: "Passwords don't match",
+      path: ["confirmPassword"],
+    }
+  );
 
 export const loginSchema = z.object({
   email: emailSchema,

@@ -44,13 +44,11 @@ const onSubmit = async () => {
             type="email"
             id="email"
             label="Email address"
-            placeholder="local-name@domain"
           />
           <FormControl
             v-model:value="password"
             type="password"
             id="password"
-            placeholder="Password"
             label="Password"
           />
           <div class="d-grid mt-4">

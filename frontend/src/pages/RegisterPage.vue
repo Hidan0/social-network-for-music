@@ -1,9 +1,35 @@
 <script lang="ts" setup>
-import { ref } from "vue";
-
+import { reactive, ref } from "vue";
 import FormControl from "../components/ui/FormControl.vue";
-
 import { registerSchema } from "../utils/validator";
+
+const validation = reactive({
+  email: {
+    invalid: false,
+    valid: false,
+    message: "",
+  },
+  username: {
+    invalid: false,
+    valid: false,
+    message: "",
+  },
+  name: {
+    valid: false,
+    invalid: false,
+    message: "",
+  },
+  password: {
+    valid: false,
+    invalid: false,
+    message: "",
+  },
+  confirmPassword: {
+    valid: false,
+    invalid: false,
+    message: "",
+  },
+});
 
 const email = ref("");
 const username = ref("");
@@ -21,9 +47,27 @@ const onSubmit = async () => {
   });
 
   if (!res.success) {
-    console.log("nope");
+    const issues = res.error.issues;
+
+    Object.entries(validation).forEach(([key, value]) => {
+      const issue = issues.find((issue) => issue.path.includes(key));
+      if (issue) {
+        value.invalid = true;
+        value.valid = false;
+        value.message = issue.message;
+      } else {
+        value.valid = true;
+        value.invalid = false;
+        value.message = "";
+      }
+    });
     return;
   }
+  Object.entries(validation).forEach(([_, value]) => {
+    value.valid = true;
+    value.invalid = false;
+    value.message = "";
+  });
 };
 </script>
 
@@ -47,33 +91,43 @@ const onSubmit = async () => {
             type="email"
             id="email"
             label="Email address"
-            placeholder="local-name@domain"
+            :invalid="validation.email.invalid"
+            :valid="validation.email.valid"
+            :invalid-message="validation.email.message"
           />
           <FormControl
             v-model:value="username"
             id="username"
-            placeholder="Username"
             label="Username"
+            :invalid="validation.username.invalid"
+            :valid="validation.username.valid"
+            :invalid-message="validation.username.message"
           />
           <FormControl
             v-model:value="name"
             id="name"
-            placeholder="Name"
             label="Name"
+            :invalid="validation.name.invalid"
+            :valid="validation.name.valid"
+            :invalid-message="validation.name.message"
           />
           <FormControl
             v-model:value="password"
             type="password"
             id="password"
-            placeholder="Password"
             label="Password"
+            :invalid="validation.password.invalid"
+            :valid="validation.password.valid"
+            :invalid-message="validation.password.message"
           />
           <FormControl
             v-model:value="confirmPassword"
             type="password"
             id="confirmPassword"
-            placeholder="Password"
             label="Confirm password"
+            :invalid="validation.confirmPassword.invalid"
+            :valid="validation.confirmPassword.valid"
+            :invalid-message="validation.confirmPassword.message"
           />
           <div class="d-grid mt-4">
             <button type="submit" class="btn btn-primary">Register</button>
