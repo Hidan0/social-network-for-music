@@ -2,6 +2,9 @@
 import { reactive, ref } from "vue";
 import FormControl from "../components/ui/FormControl.vue";
 import { registerSchema } from "../utils/validator";
+import axios from "axios";
+import { API_URL } from "../utils/config";
+import router from "../router";
 
 const validation = reactive({
   email: {
@@ -63,11 +66,26 @@ const onSubmit = async () => {
     });
     return;
   }
+
   Object.entries(validation).forEach(([_, value]) => {
     value.valid = true;
     value.invalid = false;
     value.message = "";
   });
+
+  try {
+    await axios.post(`${API_URL}/auth/register`, {
+      email: email.value,
+      username: username.value,
+      name: name.value,
+      password: password.value,
+    });
+
+    console.log(`Success! Welcome ${name.value}! Redirecting to login page`);
+    router.push({ name: "login" });
+  } catch (error: any) {
+    console.log(error.response.data.message);
+  }
 };
 </script>
 
