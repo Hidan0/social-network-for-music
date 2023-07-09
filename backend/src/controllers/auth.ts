@@ -1,4 +1,9 @@
-import { createUser, getUserByEmail, getUserByUsername } from "../db/Users";
+import {
+  createUser,
+  getUserByEmail,
+  getUserBySessionToken,
+  getUserByUsername,
+} from "../db/Users";
 import express from "express";
 import { hashPwd, randomSalt } from "../utils";
 import {
@@ -116,6 +121,28 @@ export const login = async (req: express.Request, res: express.Response) => {
     });
 
     return res.status(200).json(user).end();
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+export const validToken = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  try {
+    const sessionToken = req.cookies["SNM-AUTH"];
+    if (!sessionToken) {
+      return res.status(200).json({ isValid: false }).end();
+    }
+
+    const existingUser = await getUserBySessionToken(sessionToken);
+
+    if (!existingUser) {
+      return res.status(200).json({ isValid: false }).end();
+    }
+    return res.status(200).json({ isValid: true }).end();
   } catch (error: any) {
     console.log(error);
     return res.status(500).json({ message: error.message });
