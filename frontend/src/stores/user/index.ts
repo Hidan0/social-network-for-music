@@ -61,11 +61,14 @@ export default defineStore("user", {
     async verify(): Promise<boolean> {
       const res = await axios.get("/auth/verify", {
         headers: {
-          "SNM-AUTH": `${this.token}`,
+          "SNM-AUTH": this.token,
         },
       });
 
-      if (!res.data.isValid) {
+      if (
+        !res.data.isValid ||
+        (!this.name && !this.email && !this.username && !this.id)
+      ) {
         this._clearToken();
         return false;
       }
