@@ -32,6 +32,10 @@ export default defineStore("user", {
       this.token = token;
       store({ authToken: token });
     },
+    _clearToken(): void {
+      this.token = undefined;
+      store({ authToken: undefined });
+    },
     async register(data: RegisterData): Promise<void> {
       const res = await axios.post("/auth/register", data);
 
@@ -60,7 +64,13 @@ export default defineStore("user", {
           "SNM-AUTH": `${this.token}`,
         },
       });
-      return res.data.isValid;
+
+      if (!res.data.isValid) {
+        this._clearToken();
+        return false;
+      }
+
+      return true;
     },
   },
 });
