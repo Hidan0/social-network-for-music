@@ -7,7 +7,7 @@ export const isAuthenticated = async (
   next: express.NextFunction
 ) => {
   try {
-    const sessionToken = req.cookies["SNM-AUTH"];
+    const sessionToken = req.header("SNM-AUTH");
 
     if (!sessionToken) {
       return res.status(403).json({ message: "Unauthorized" });

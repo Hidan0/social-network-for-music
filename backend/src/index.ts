@@ -1,6 +1,5 @@
 import express from "express";
 import bodyParser from "body-parser";
-import cookieParser from "cookie-parser";
 import cors from "cors";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
@@ -18,7 +17,6 @@ app.use(
   })
 );
 
-app.use(cookieParser());
 app.use(bodyParser.json());
 
 app.listen(config.PORT, () => {

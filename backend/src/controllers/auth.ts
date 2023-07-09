@@ -115,10 +115,7 @@ export const login = async (req: express.Request, res: express.Response) => {
 
     await user.save();
 
-    res.cookie("SNM-AUTH", user.auth.sessionToken, {
-      domain: "localhost",
-      path: "/",
-    });
+    res.setHeader("SNM-AUTH", user.auth.sessionToken);
 
     return res.status(200).json(user).end();
   } catch (error: any) {
@@ -132,9 +129,9 @@ export const validToken = async (
   res: express.Response
 ) => {
   try {
-    const sessionToken = req.cookies["SNM-AUTH"];
+    const sessionToken = req.header("SNM-AUTH");
     if (!sessionToken) {
-      return res.status(200).json({ isValid: false }).end();
+      return res.status(400).json({ message: "No session token provided" });
     }
 
     const existingUser = await getUserBySessionToken(sessionToken);
