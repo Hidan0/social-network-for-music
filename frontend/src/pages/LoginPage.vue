@@ -2,6 +2,9 @@
 import { reactive, ref } from "vue";
 import FormControl from "../components/ui/FormControl.vue";
 import { loginWithEmailSchema } from "../utils/validator";
+import axios from "axios";
+import { API_URL } from "../utils/config";
+import router from "../router";
 
 const email = ref("");
 const password = ref("");
@@ -47,6 +50,20 @@ const onSubmit = async () => {
     value.invalid = false;
     value.message = "";
   });
+
+  try {
+    const user = await axios.post(`${API_URL}/auth/login`, {
+      email: email.value,
+      password: password.value,
+    });
+
+    console.log(
+      `Success! Welcome back ${user.data.name}! Redirecting to home page`
+    );
+    router.push({ name: "home" });
+  } catch (error: any) {
+    console.log(error.response.data.message);
+  }
 };
 </script>
 
@@ -87,7 +104,7 @@ const onSubmit = async () => {
             :invalid-message="validation.password.message"
           />
           <div class="d-grid mt-4">
-            <button type="submit" class="btn btn-primary">Register</button>
+            <button type="submit" class="btn btn-primary">Login</button>
           </div>
         </form>
       </div>
