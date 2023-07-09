@@ -2,12 +2,13 @@
 import { reactive, ref } from "vue";
 import FormControl from "../components/ui/FormControl.vue";
 import { loginWithEmailSchema } from "../utils/validator";
-import axios from "axios";
-import { API_URL } from "../utils/config";
 import router from "../router";
+import useUserStore from "../stores/user";
 
 const email = ref("");
 const password = ref("");
+
+const $user = useUserStore();
 
 const validation = reactive({
   email: {
@@ -52,13 +53,13 @@ const onSubmit = async () => {
   });
 
   try {
-    const user = await axios.post(`${API_URL}/auth/login`, {
+    await $user.login({
       email: email.value,
       password: password.value,
     });
 
     console.log(
-      `Success! Welcome back ${user.data.name}! Redirecting to home page`
+      `Success! Welcome back ${$user.name}! Redirecting to home page`
     );
     router.push({ name: "home" });
   } catch (error: any) {

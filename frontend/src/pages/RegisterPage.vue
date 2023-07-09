@@ -2,9 +2,8 @@
 import { reactive, ref } from "vue";
 import FormControl from "../components/ui/FormControl.vue";
 import { registerSchema } from "../utils/validator";
-import axios from "axios";
-import { API_URL } from "../utils/config";
 import router from "../router";
+import useUserStore from "../stores/user";
 
 const validation = reactive({
   email: {
@@ -33,6 +32,8 @@ const validation = reactive({
     message: "",
   },
 });
+
+const $user = useUserStore();
 
 const email = ref("");
 const username = ref("");
@@ -74,14 +75,14 @@ const onSubmit = async () => {
   });
 
   try {
-    await axios.post(`${API_URL}/auth/register`, {
+    await $user.register({
       email: email.value,
       username: username.value,
       name: name.value,
       password: password.value,
     });
 
-    console.log(`Success! Welcome ${name.value}! Redirecting to login page`);
+    console.log(`Success! Welcome ${$user.name}! Redirecting to login page`);
     router.push({ name: "login" });
   } catch (error: any) {
     console.log(error.response.data.message);
