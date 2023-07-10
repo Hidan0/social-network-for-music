@@ -39,9 +39,14 @@ const props = defineProps({
   },
 });
 
+const emit = defineEmits<{
+  (event: "removed"): void;
+}>();
+
 const removeTrack = async () => {
   try {
     await $playlist.removeTrackFromPlaylist(props.id, props.playlistId);
+    emit("removed");
   } catch (error: any) {
     console.log(error);
   }

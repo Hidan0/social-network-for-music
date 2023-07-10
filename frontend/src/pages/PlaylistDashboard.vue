@@ -86,6 +86,7 @@ onMounted(fetchData);
           :song-album="track.album"
           :song-duration="track.duration"
           :playlist-id="playlistId"
+          @removed="fetchData"
         />
       </div>
     </div>
