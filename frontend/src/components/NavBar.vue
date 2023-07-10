@@ -1,6 +1,6 @@
 <script setup lang="ts"></script>
 <template>
-  <nav class="navbar bg-body-tertiary fixed-top">
+  <nav class="navbar bg-body-tertiary">
     <div class="container-fluid">
       <a class="navbar-brand text-spt-primary" href="#">SNM - Spotify</a>
       <button

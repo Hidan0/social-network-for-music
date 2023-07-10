@@ -1,20 +1,17 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { onMounted } from "vue";
 import useUserStore from "../stores/user";
 import router from "../router";
 
 import NavBar from "../components/NavBar.vue";
+import PublicPlaylists from "../components/PublicPlaylists.vue";
 
 const $user = useUserStore();
-
-const authenticated = ref("");
 
 onMounted(async () => {
   try {
     const isAuth = await $user.verify();
-    if (isAuth) {
-      authenticated.value = "Authenticated";
-    } else {
+    if (!isAuth) {
       router.push({ name: "login" });
     }
   } catch (error: any) {
@@ -25,5 +22,9 @@ onMounted(async () => {
 
 <template>
   <NavBar />
-  <h1>{{ authenticated }}</h1>
+  <div class="container">
+    <div class="row">
+      <PublicPlaylists />
+    </div>
+  </div>
 </template>
