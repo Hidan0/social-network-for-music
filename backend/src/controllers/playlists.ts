@@ -270,3 +270,15 @@ export const deleteTrackFromPlaylist = async (
     return res.status(500).json({ message: error.message });
   }
 };
+
+export const getPlaylist = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  try {
+    return res.status(200).json(req.playlist).end();
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({ message: error.message });
+  }
+};

@@ -15,6 +15,7 @@ import {
   addTrackToPlaylist,
   getTracksFromPlaylist,
   deleteTrackFromPlaylist,
+  getPlaylist,
 } from "../controllers/playlists";
 
 export default (router: express.Router) => {
@@ -60,5 +61,12 @@ export default (router: express.Router) => {
     isAuthenticated,
     isPlaylistAuthorOrCollaborator,
     deleteTrackFromPlaylist
+  );
+
+  router.get(
+    "/playlists/:id",
+    isAuthenticated,
+    isPlaylistAuthorOrCollaborator,
+    getPlaylist
   );
 };
