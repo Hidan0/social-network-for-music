@@ -72,14 +72,14 @@ const onSubmit = async () => {
   <div class="container mt-4 text-center">
     <div class="row">
       <div class="col">
-        <h1 class="text-primary">Login</h1>
+        <h1 class="text-spt-primary">Login</h1>
       </div>
     </div>
     <div class="row">
       <div class="col">
         <p>
-          Access your <span class="text-primary">account</span> to unlock all
-          features.
+          Access your <span class="text-spt-primary">account</span> to unlock
+          all features.
         </p>
       </div>
     </div>
@@ -105,14 +105,16 @@ const onSubmit = async () => {
             :invalid-message="validation.password.message"
           />
           <div class="d-grid mt-4">
-            <button type="submit" class="btn btn-primary">Login</button>
+            <button type="submit" class="btn btn-spt-primary">Login</button>
           </div>
         </form>
       </div>
       <div class="row">
         <p class="text-secondary mt-2">
           Don't have and account?
-          <RouterLink :to="{ name: 'register' }" class="fw-bold"
+          <RouterLink
+            :to="{ name: 'register' }"
+            class="fw-bold text-spt-primary"
             >Register</RouterLink
           >
         </p>

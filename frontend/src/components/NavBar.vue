@@ -2,7 +2,7 @@
 <template>
   <nav class="navbar bg-body-tertiary fixed-top">
     <div class="container-fluid">
-      <a class="navbar-brand text-info" href="#">SNM - Spotify</a>
+      <a class="navbar-brand text-spt-primary" href="#">SNM - Spotify</a>
       <button
         class="navbar-toggler"
         type="button"
@@ -20,7 +20,10 @@
         aria-labelledby="offcanvasNavbarLabel"
       >
         <div class="offcanvas-header">
-          <h5 class="offcanvas-title text-info" id="offcanvasNavbarLabel">
+          <h5
+            class="offcanvas-title text-spt-primary"
+            id="offcanvasNavbarLabel"
+          >
             Menu
           </h5>
           <button
