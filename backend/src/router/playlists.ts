@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  isAccessible,
   isAuthenticated,
   isPlaylistAuthor,
   isPlaylistAuthorOrCollaborator,
@@ -63,10 +64,5 @@ export default (router: express.Router) => {
     deleteTrackFromPlaylist
   );
 
-  router.get(
-    "/playlists/:id",
-    isAuthenticated,
-    isPlaylistAuthorOrCollaborator,
-    getPlaylist
-  );
+  router.get("/playlists/:id", isAuthenticated, isAccessible, getPlaylist);
 };
