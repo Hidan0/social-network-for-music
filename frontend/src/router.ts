@@ -20,6 +20,11 @@ const router = createRouter({
       path: "/login",
       component: () => import("./pages/LoginPage.vue"),
     },
+    {
+      name: "playlist",
+      path: "/playlist",
+      component: () => import("./pages/PlaylistDashboard.vue"),
+    },
   ],
 });
 
