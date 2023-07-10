@@ -1,14 +1,15 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { Ref, onMounted, ref } from "vue";
 
 import PlaylistCard from "./ui/PlaylistCard.vue";
+import { PlaylistData } from "../stores/playlist/types";
 
 import usePlaylistStore from "../stores/playlist";
 
 const $playlist = usePlaylistStore();
 
 const empty = ref(true);
-const playlists = ref([]);
+const playlists: Ref<PlaylistData[]> = ref([]);
 
 const onMount = async () => {
   try {
@@ -33,6 +34,7 @@ onMounted(onMount);
           :author="playlist.author.username"
           :description="playlist.description"
           :tags="playlist.tags"
+          :id="playlist._id"
         />
       </div>
     </div>

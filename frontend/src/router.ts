@@ -22,7 +22,7 @@ const router = createRouter({
     },
     {
       name: "playlist",
-      path: "/playlist",
+      path: "/playlist/:id",
       component: () => import("./pages/PlaylistDashboard.vue"),
     },
   ],

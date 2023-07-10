@@ -1,5 +1,12 @@
 <script setup lang="ts">
-defineProps({
+import { PropType } from "vue";
+import router from "../../router";
+
+const props = defineProps({
+  id: {
+    type: String,
+    required: true,
+  },
   title: {
     type: String,
     default: "Playlist title",
@@ -13,10 +20,19 @@ defineProps({
     defeault: "",
   },
   tags: {
-    type: [String],
+    type: Array as PropType<string[]>,
     default: [],
   },
 });
+
+const openPlaylist = () => {
+  router.push({
+    name: "playlist",
+    params: {
+      id: props.id,
+    },
+  });
+};
 </script>
 
 <template>
@@ -31,7 +47,7 @@ defineProps({
         </div>
       </div>
     </h6>
-    <div class="card-body">
+    <div class="card-body" @click="openPlaylist">
       <h5 class="card-title">{{ title }}</h5>
       <p class="card-text">{{ description }}</p>
     </div>
