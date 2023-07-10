@@ -2,14 +2,14 @@
 import { Ref, onMounted, ref } from "vue";
 
 import PlaylistCard from "./ui/PlaylistCard.vue";
-import { PlaylistData } from "../stores/playlist/types";
+import { PublicPlaylistData } from "../stores/playlist/types";
 
 import usePlaylistStore from "../stores/playlist";
 
 const $playlist = usePlaylistStore();
 
 const empty = ref(true);
-const playlists: Ref<PlaylistData[]> = ref([]);
+const playlists: Ref<PublicPlaylistData[]> = ref([]);
 
 const onMount = async () => {
   try {

@@ -74,8 +74,12 @@ export const isAccessible = async (
       return res.status(404).json({ message: "Playlist not found" });
     }
 
+    if (!playlist.isPrivate) {
+      req.playlist = playlist;
+      return next();
+    }
+
     if (
-      playlist.isPrivate &&
       playlist.author.toString() !== userId.toString() &&
       !playlist.collaborators.includes(userId.toString())
     ) {

@@ -59,4 +59,8 @@ const openPlaylist = () => {
 .tag {
   width: fit-content;
 }
+
+.card-body:hover {
+  cursor: pointer;
+}
 </style>

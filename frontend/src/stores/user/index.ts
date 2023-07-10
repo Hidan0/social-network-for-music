@@ -75,5 +75,14 @@ export default defineStore("user", {
 
       return true;
     },
+    async getUsernameFromUserId(id: string): Promise<string> {
+      const res = await axios.get(`/users/${id}`, {
+        headers: {
+          "SNM-AUTH": this.token,
+        },
+      });
+
+      return res.data.username;
+    },
   },
 });
