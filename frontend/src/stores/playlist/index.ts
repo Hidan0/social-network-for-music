@@ -23,6 +23,7 @@ export default defineStore("playlist", {
 
       return res.data;
     },
+
     async getTracks(trackIds: string[]): Promise<TrackData[]> {
       const res = await axios.get(`/spotify/tracks/${trackIds.join(",")}`, {
         headers: {
@@ -44,6 +45,16 @@ export default defineStore("playlist", {
       });
 
       return tracks;
+    },
+    async removeTrackFromPlaylist(
+      trackId: string,
+      playlistId: string
+    ): Promise<void> {
+      await axios.delete(`/playlists/${playlistId}/tracks/${trackId}`, {
+        headers: {
+          "SNM-AUTH": $user.token,
+        },
+      });
     },
   },
 });

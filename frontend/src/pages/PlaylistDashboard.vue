@@ -78,12 +78,14 @@ onMounted(fetchData);
       <div class="col">
         <TrackRow
           v-for="(track, index) in playlistTracks"
+          :id="track.id"
           :index="index + 1"
           :img-src="track.imgSrc"
           :song-title="track.name"
           :song-author="track.artist"
           :song-album="track.album"
           :song-duration="track.duration"
+          :playlist-id="playlistId"
         />
       </div>
     </div>

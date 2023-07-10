@@ -28,7 +28,7 @@ onMounted(onMount);
 <template>
   <div class="container text-center mt-5">
     <div class="row" v-if="!empty">
-      <div class="col mb-3" v-for="playlist in playlists">
+      <div class="col-auto mb-3" v-for="playlist in playlists">
         <PlaylistCard
           :title="playlist.title"
           :author="playlist.author.username"
