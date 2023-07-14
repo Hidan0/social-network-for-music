@@ -4,19 +4,9 @@ export interface PlaylistData {
   title: string;
   description: string;
   tags: string[];
-  isPrivate: boolean;
-  tracks: string[];
-  collaborators: string[];
-}
-
-export interface PublicPlaylistData {
-  _id: string;
-  author: {
-    username: string;
-  };
-  title: string;
-  description: string;
-  tags: string[];
+  isPrivate: boolean | undefined;
+  tracks: string[] | undefined;
+  collaborators: string[] | undefined;
 }
 
 export interface TrackData {

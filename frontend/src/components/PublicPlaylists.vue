@@ -2,14 +2,14 @@
 import { Ref, onMounted, ref } from "vue";
 
 import PlaylistCard from "./ui/PlaylistCard.vue";
-import { PublicPlaylistData } from "../stores/playlist/types";
+import { PlaylistData } from "../stores/playlist/types";
 
 import usePlaylistStore from "../stores/playlist";
 
 const $playlist = usePlaylistStore();
 
 const empty = ref(true);
-const playlists: Ref<PublicPlaylistData[]> = ref([]);
+const playlists: Ref<PlaylistData[]> = ref([]);
 
 const onMount = async () => {
   try {
@@ -31,7 +31,7 @@ onMounted(onMount);
       <div class="col-auto mb-3" v-for="playlist in playlists">
         <PlaylistCard
           :title="playlist.title"
-          :author="playlist.author.username"
+          :author="playlist.author"
           :description="playlist.description"
           :tags="playlist.tags"
           :id="playlist._id"

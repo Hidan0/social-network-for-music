@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { instance as axios } from "../../utils";
-import { TrackData, PlaylistData, PublicPlaylistData } from "./types";
+import { TrackData, PlaylistData } from "./types";
 import useUserStore from "../user";
 
 const $user = useUserStore();
@@ -9,9 +9,18 @@ export default defineStore("playlist", {
   state: () => ({}),
   getters: {},
   actions: {
-    async getPublicPlaylists(): Promise<PublicPlaylistData[]> {
+    async getPublicPlaylists(): Promise<PlaylistData[]> {
       const res = await axios.get("/playlists/public");
-      return res.data;
+
+      return res.data.map((playlist: any) => {
+        return {
+          _id: playlist._id,
+          title: playlist.title,
+          author: playlist.author.username,
+          tags: playlist.tags,
+          description: playlist.description,
+        } as PlaylistData;
+      }) as PlaylistData[];
     },
 
     async getPlaylistById(id: string): Promise<PlaylistData> {

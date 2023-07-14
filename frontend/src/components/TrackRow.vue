@@ -1,12 +1,14 @@
 <script setup lang="ts">
+import { PropType } from "vue";
 import usePlaylistStore from "../stores/playlist";
+import { TrackData } from "../stores/playlist/types";
 import { convertMsToTime } from "../utils";
 
 const $playlist = usePlaylistStore();
 
 const props = defineProps({
-  id: {
-    type: String,
+  track: {
+    type: Object as PropType<TrackData>,
     required: true,
   },
   playlistId: {
@@ -14,26 +16,6 @@ const props = defineProps({
     required: true,
   },
   index: {
-    type: Number,
-    required: true,
-  },
-  imgSrc: {
-    type: String,
-    required: true,
-  },
-  songTitle: {
-    type: String,
-    required: true,
-  },
-  songAuthor: {
-    type: String,
-    required: true,
-  },
-  songAlbum: {
-    type: String,
-    required: true,
-  },
-  songDuration: {
     type: Number,
     required: true,
   },
@@ -45,7 +27,7 @@ const emit = defineEmits<{
 
 const removeTrack = async () => {
   try {
-    await $playlist.removeTrackFromPlaylist(props.id, props.playlistId);
+    await $playlist.removeTrackFromPlaylist(props.track.id, props.playlistId);
     emit("removed");
   } catch (error: any) {
     console.log(error);
@@ -57,23 +39,20 @@ const removeTrack = async () => {
   <div class="row align-items-center text-center px-2 py-1">
     <div class="col-1">{{ index }}</div>
     <div class="col-3 col-md-auto">
-      <img :src="imgSrc" />
+      <img :src="track.imgSrc" />
     </div>
     <div class="col">
-      <div class="row text-spt-primary">{{ songTitle }}</div>
-      <div class="row text-secondary">{{ songAuthor }}</div>
+      <div class="row text-spt-primary">{{ track.name }}</div>
+      <div class="row text-secondary">{{ track.artist }}</div>
     </div>
-    <div class="col d-none d-md-block">{{ songAlbum }}</div>
+    <div class="col d-none d-md-block">{{ track.album }}</div>
     <div class="col-1 d-none d-md-block">
-      {{ convertMsToTime(songDuration) }}
+      {{ convertMsToTime(track.duration) }}
     </div>
     <div class="col-1">
-      <span
-        class="fa-solid fa-times bg-danger rounded-5 text-white px-2 py-1"
-        style="cursor: pointer"
-        @click="removeTrack"
-      >
-      </span>
+      <button class="btn btn-danger btn-sm rounded-5" @click="removeTrack">
+        <span class="fa-solid fa-times text-white"> </span>
+      </button>
     </div>
   </div>
 </template>
