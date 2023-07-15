@@ -164,7 +164,7 @@ export const removeCollaborator = async (
   res: express.Response
 ) => {
   try {
-    const { playlistId, collId } = req.params;
+    const { id, collId } = req.params;
 
     if (req.identity._id.toString() === collId) {
       return res.status(400).json({ message: "You are the owner" });
@@ -180,10 +180,7 @@ export const removeCollaborator = async (
       return res.status(400).json({ message: "Not a collaborator" });
     }
 
-    const updatedPlaylist = await removeCollaboratorFromPlaylist(
-      playlistId,
-      collId
-    );
+    const updatedPlaylist = await removeCollaboratorFromPlaylist(id, collId);
     return res.status(200).json(updatedPlaylist).end();
   } catch (error: any) {
     console.log(error);
