@@ -14,9 +14,13 @@ export const getSpotifyToken = async () => {
     const { access_token: token } = await fetchSpotifyToken();
     access_token = token;
 
-    setInterval(fetchSpotifyToken, expires_in * 1000);
+    setTimeout(clearToken, expires_in * 1000);
   }
   return access_token;
+};
+
+const clearToken = () => {
+  access_token = undefined;
 };
 
 const fetchSpotifyToken = async () => {
