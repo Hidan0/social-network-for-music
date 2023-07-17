@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeMount, onMounted, reactive, ref, Ref } from "vue";
+import { reactive, ref, Ref } from "vue";
 import { useRoute } from "vue-router";
 import router from "../router";
 import usePlaylistStore from "../stores/playlist";
@@ -9,6 +9,12 @@ import useUserStore from "../stores/user";
 import { convertMsToTime } from "../utils";
 
 import TrackRow from "../components/TrackRow.vue";
+
+import CollaboratorManager from "../components/CollaboratorManager.vue";
+const collabManagerId = "manageCollabs";
+
+import PlaylistEditor from "../components/PlaylistEditor.vue";
+const editPlaylisyId = "editPlaylist";
 
 const route = useRoute();
 
@@ -38,17 +44,6 @@ const authorName = ref("");
 const userIsACollab = ref(false);
 const userIsOwner = ref(false);
 
-const checkUser = async () => {
-  try {
-    const isAuth = await $user.verify();
-    if (!isAuth) {
-      router.push({ name: "login" });
-    }
-  } catch (error: any) {
-    router.push({ name: "login" });
-  }
-};
-
 const fetchData = async () => {
   try {
     const data: PlaylistData = await $playlist.getPlaylistById(playlistId);
@@ -58,20 +53,21 @@ const fetchData = async () => {
     playlistData.isPrivate = data.isPrivate;
     playlistData.description = data.description;
     playlistData.tags = data.tags;
-    playlistData.tracks = data.tracks;
+    playlistData.tracks = data.tracks!;
     playlistData.title = data.title;
-    playlistData.collaborators = data.collaborators;
+    playlistData.collaborators = data.collaborators!;
 
     authorName.value = await $user.getUsernameFromUserId(data.author);
 
-    if (data.collaborators.includes($user.id!)) userIsACollab.value = true;
-    if (data.author === $user.id!) userIsOwner.value = true;
+    if (playlistData.collaborators.includes($user.id!))
+      userIsACollab.value = true;
+    if (playlistData.author === $user.id!) userIsOwner.value = true;
 
-    numeberOfTraks.value = data.tracks.length;
+    numeberOfTraks.value = data.tracks!.length;
 
-    if (data.tracks.length > 0) {
+    if (data.tracks!.length > 0) {
       try {
-        const tracks = await $playlist.getTracks(data.tracks);
+        const tracks = await $playlist.getTracks(playlistData.tracks);
         playlistTracks.value = tracks;
 
         let dur = 0;
@@ -89,12 +85,24 @@ const fetchData = async () => {
   }
 };
 
-onBeforeMount(checkUser);
-onMounted(fetchData);
+fetchData();
 </script>
 
 <template>
   <div class="container">
+    <CollaboratorManager
+      :id="collabManagerId"
+      :collab-ids="playlistData.collaborators!"
+      :playlist-id="playlistId"
+      @updated="fetchData"
+    />
+    <PlaylistEditor
+      :id="editPlaylisyId"
+      :title="playlistData.title"
+      :description="playlistData.description"
+      :tags="playlistData.tags"
+      :is-private="playlistData.isPrivate!"
+    />
     <div class="row mt-4 border-bottom">
       <div class="col">
         <p>
@@ -109,12 +117,22 @@ onMounted(fetchData);
         <button class="btn rounded-5" v-if="userIsACollab">
           <span class="fa-regular fa-user-plus"></span>
         </button>
-        <button class="btn rounded-5" v-if="userIsOwner">
+        <button
+          class="btn rounded-5"
+          data-bs-toggle="modal"
+          :data-bs-target="'#' + collabManagerId"
+          v-if="userIsOwner"
+        >
           <span class="fa-solid fa-users"></span>
         </button>
       </div>
       <div class="col-1">
-        <button class="btn rounded-5">
+        <button
+          class="btn rounded-5"
+          data-bs-toggle="modal"
+          :data-bs-target="'#' + editPlaylisyId"
+          v-if="userIsOwner"
+        >
           <span class="fa-regular fa-pen-to-square"></span>
         </button>
       </div>

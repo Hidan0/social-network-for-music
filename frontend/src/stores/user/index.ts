@@ -59,6 +59,8 @@ export default defineStore("user", {
       });
     },
     async verify(): Promise<boolean> {
+      if (!this.token) return false;
+
       const res = await axios.get("/auth/verify", {
         headers: {
           "SNM-AUTH": this.token,

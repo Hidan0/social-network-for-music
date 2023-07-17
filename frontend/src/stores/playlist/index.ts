@@ -65,5 +65,15 @@ export default defineStore("playlist", {
         },
       });
     },
+    async removeCollaboratorFromPlaylist(
+      playlistId: string,
+      collabId: string
+    ): Promise<void> {
+      await axios.delete(`/playlists/${playlistId}/collaborator/${collabId}`, {
+        headers: {
+          "SNM-AUTH": $user.token,
+        },
+      });
+    },
   },
 });

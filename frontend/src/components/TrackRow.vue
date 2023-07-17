@@ -4,6 +4,8 @@ import usePlaylistStore from "../stores/playlist";
 import { TrackData } from "../stores/playlist/types";
 import { convertMsToTime } from "../utils";
 
+import DeleteBtn from "./ui/DeleteBtn.vue";
+
 const $playlist = usePlaylistStore();
 
 const props = defineProps({
@@ -50,9 +52,7 @@ const removeTrack = async () => {
       {{ convertMsToTime(track.duration) }}
     </div>
     <div class="col-1">
-      <button class="btn btn-danger btn-sm rounded-5" @click="removeTrack">
-        <span class="fa-solid fa-times text-white"> </span>
-      </button>
+      <DeleteBtn @click="removeTrack" />
     </div>
   </div>
 </template>
