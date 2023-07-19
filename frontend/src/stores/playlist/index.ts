@@ -1,13 +1,28 @@
 import { defineStore } from "pinia";
 import { instance as axios } from "../../utils";
-import { TrackData, PlaylistData } from "./types";
+import { TrackData, PlaylistData, PlaylistState } from "./types";
 import useUserStore from "../user";
 
 const $user = useUserStore();
 
 export default defineStore("playlist", {
-  state: () => ({}),
-  getters: {},
+  state: (): PlaylistState => ({
+    _id: undefined,
+    author: undefined,
+    title: undefined,
+    description: undefined,
+    tags: undefined,
+    isPrivate: undefined,
+    tracks: undefined,
+    collaborators: undefined,
+  }),
+  getters: {
+    loaded(): boolean {
+      return Object.values(this as PlaylistState).every(
+        (prop) => prop !== undefined
+      );
+    },
+  },
   actions: {
     async getPublicPlaylists(): Promise<PlaylistData[]> {
       const res = await axios.get("/playlists/public");
@@ -23,14 +38,23 @@ export default defineStore("playlist", {
       }) as PlaylistData[];
     },
 
-    async getPlaylistById(id: string): Promise<PlaylistData> {
-      const res = await axios.get(`/playlists/${id}`, {
-        headers: {
-          "SNM-AUTH": $user.token,
-        },
-      });
+    async setPlaylist(id: string): Promise<void> {
+      if (!this._id || this._id !== id) {
+        const res = await axios.get(`/playlists/${id}`, {
+          headers: {
+            "SNM-AUTH": $user.token,
+          },
+        });
 
-      return res.data;
+        this._id = res.data._id;
+        this.author = res.data.author;
+        this.title = res.data.title;
+        this.description = res.data.description;
+        this.tags = res.data.tags;
+        this.isPrivate = res.data.isPrivate;
+        this.tracks = res.data.tracks;
+        this.collaborators = res.data.collaborators;
+      }
     },
 
     async getTracks(trackIds: string[]): Promise<TrackData[]> {

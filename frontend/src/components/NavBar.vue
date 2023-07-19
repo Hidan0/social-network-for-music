@@ -1,8 +1,11 @@
 <script setup lang="ts"></script>
+
 <template>
   <nav class="navbar bg-body-tertiary">
     <div class="container-fluid">
-      <a class="navbar-brand text-spt-primary" href="#">SNM - Spotify</a>
+      <RouterLink class="navbar-brand text-spt-primary" :to="{ name: 'home' }">
+        SNM - Spotify
+      </RouterLink>
       <button
         class="navbar-toggler"
         type="button"
@@ -36,7 +39,9 @@
         <div class="offcanvas-body">
           <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
             <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="#">Home</a>
+              <RouterLink class="nav-link active" :to="{ name: 'home' }">
+                Home
+              </RouterLink>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="#">Explore</a>

@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { PropType } from "vue";
-
 import CollabsRow from "./ui/CollabsRow.vue";
+import usePlaylistStore from "../stores/playlist";
+
+const $playlist = usePlaylistStore();
 
 const emit = defineEmits<{
   (event: "updated"): void;
@@ -10,10 +11,6 @@ const emit = defineEmits<{
 defineProps({
   id: {
     type: String,
-    required: true,
-  },
-  collabIds: {
-    type: Array as PropType<string[]>,
     required: true,
   },
   playlistId: {
@@ -47,13 +44,13 @@ const updatedCollaborators = () => emit("updated");
           ></button>
         </div>
         <div class="modal-body">
-          <div class="row" v-if="collabIds.length === 0">
+          <div class="row" v-if="$playlist.collaborators!.length === 0">
             <h5 class="text-center">
               No collaborators <span class="fa-regular fa-face-sad-tear"></span>
             </h5>
           </div>
           <CollabsRow
-            v-for="collabId in collabIds"
+            v-for="collabId in $playlist.collaborators!"
             :playlist-id="playlistId"
             :user-id="collabId"
             @removed="updatedCollaborators"

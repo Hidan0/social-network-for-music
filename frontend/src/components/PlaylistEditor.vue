@@ -1,37 +1,24 @@
 <script setup lang="ts">
 import FormControl from "./ui/FormControl.vue";
 import FormCheckBox from "./ui/FormCheckBox.vue";
-import { PropType, computed, ref } from "vue";
+import { computed, ref } from "vue";
+import usePlaylistStore from "../stores/playlist";
 
-const props = defineProps({
+const $playlist = usePlaylistStore();
+
+defineProps({
   id: {
     type: String,
     required: true,
   },
-  title: {
-    type: String,
-    required: true,
-  },
-  description: {
-    type: String,
-    required: true,
-  },
-  tags: {
-    type: Array as PropType<string[]>,
-    required: true,
-  },
-  isPrivate: {
-    type: Boolean,
-    required: true,
-  },
 });
 
-const currentTitle = ref(props.title);
-const currentDescription = ref(props.description);
+const currentTitle = ref($playlist.title!);
+const currentDescription = ref($playlist.description!);
 const currentTags = computed(() => {
-  return props.tags.join(" ").toString();
+  return $playlist.tags!.join(" ").toString();
 });
-const currentIsPrivate = ref(props.isPrivate);
+const currentIsPrivate = ref($playlist.isPrivate!);
 </script>
 
 <template>

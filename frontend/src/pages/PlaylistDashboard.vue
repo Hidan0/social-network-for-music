@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { reactive, ref, Ref } from "vue";
+import { ref, Ref } from "vue";
 import { useRoute } from "vue-router";
-import router from "../router";
 import usePlaylistStore from "../stores/playlist";
-import { PlaylistData, TrackData } from "../stores/playlist/types";
+import { TrackData } from "../stores/playlist/types";
 import useUserStore from "../stores/user";
 
 import { convertMsToTime } from "../utils";
 
 import TrackRow from "../components/TrackRow.vue";
+import SuspenseLayout from "../components/layout/SuspenseLayout.vue";
 
 import CollaboratorManager from "../components/CollaboratorManager.vue";
 const collabManagerId = "manageCollabs";
@@ -24,18 +24,6 @@ const $user = useUserStore();
 const playlistId = route.params.id as string;
 
 const playlistTracks: Ref<TrackData[]> = ref([]);
-
-const playlistData = reactive({
-  _id: "",
-  author: "",
-  title: "",
-  description: "",
-  tags: [],
-  isPrivate: true,
-  tracks: [],
-  collaborators: [],
-} as PlaylistData);
-
 const numeberOfTraks = ref(0);
 const totalDuration = ref("");
 
@@ -44,30 +32,24 @@ const authorName = ref("");
 const userIsACollab = ref(false);
 const userIsOwner = ref(false);
 
+const isFetching = ref(true);
+const hasFailed = ref(false);
 const fetchData = async () => {
   try {
-    const data: PlaylistData = await $playlist.getPlaylistById(playlistId);
+    await $playlist.setPlaylist(playlistId);
 
-    playlistData._id = data._id;
-    playlistData.author = data.author;
-    playlistData.isPrivate = data.isPrivate;
-    playlistData.description = data.description;
-    playlistData.tags = data.tags;
-    playlistData.tracks = data.tracks!;
-    playlistData.title = data.title;
-    playlistData.collaborators = data.collaborators!;
+    authorName.value = await $user.getUsernameFromUserId($playlist.author!);
 
-    authorName.value = await $user.getUsernameFromUserId(data.author);
-
-    if (playlistData.collaborators.includes($user.id!))
+    if ($playlist.collaborators!.includes($user.id!))
       userIsACollab.value = true;
-    if (playlistData.author === $user.id!) userIsOwner.value = true;
+    if ($playlist.author! === $user.id!) userIsOwner.value = true;
 
-    numeberOfTraks.value = data.tracks!.length;
+    const tracksId = $playlist.tracks!;
+    numeberOfTraks.value = tracksId.length;
 
-    if (data.tracks!.length > 0) {
+    if (tracksId.length > 0) {
       try {
-        const tracks = await $playlist.getTracks(playlistData.tracks);
+        const tracks = await $playlist.getTracks(tracksId);
         playlistTracks.value = tracks;
 
         let dur = 0;
@@ -77,11 +59,15 @@ const fetchData = async () => {
 
         totalDuration.value = convertMsToTime(dur);
       } catch (error: any) {
-        console.log("Can not get tracks");
+        hasFailed.value = true;
+        console.log(error.message);
       }
     }
+
+    isFetching.value = false;
   } catch (error: any) {
-    router.push({ name: "home" });
+    hasFailed.value = true;
+    console.log(error.message);
   }
 };
 
@@ -90,63 +76,93 @@ fetchData();
 
 <template>
   <div class="container">
-    <CollaboratorManager
-      :id="collabManagerId"
-      :collab-ids="playlistData.collaborators!"
-      :playlist-id="playlistId"
-      @updated="fetchData"
-    />
-    <PlaylistEditor
-      :id="editPlaylisyId"
-      :title="playlistData.title"
-      :description="playlistData.description"
-      :tags="playlistData.tags"
-      :is-private="playlistData.isPrivate!"
-    />
-    <div class="row mt-4 border-bottom">
-      <div class="col">
-        <p>
-          {{ playlistData.isPrivate ? "Private Playlist" : "Public Playlist" }}
-        </p>
-        <h1 class="text-white">{{ playlistData.title }}</h1>
-        <p>{{ authorName }} ● {{ numeberOfTraks }} songs {{ totalDuration }}</p>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-1">
-        <button class="btn rounded-5" v-if="userIsACollab">
-          <span class="fa-regular fa-user-plus"></span>
-        </button>
-        <button
-          class="btn rounded-5"
-          data-bs-toggle="modal"
-          :data-bs-target="'#' + collabManagerId"
-          v-if="userIsOwner"
-        >
-          <span class="fa-solid fa-users"></span>
-        </button>
-      </div>
-      <div class="col-1">
-        <button
-          class="btn rounded-5"
-          data-bs-toggle="modal"
-          :data-bs-target="'#' + editPlaylisyId"
-          v-if="userIsOwner"
-        >
-          <span class="fa-regular fa-pen-to-square"></span>
-        </button>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col">
-        <TrackRow
-          v-for="(track, index) in playlistTracks"
-          :index="index + 1"
-          :track="track"
+    <SuspenseLayout :loading="isFetching" :failed="hasFailed">
+      <template #loader>
+        <div class="row mt-4 border-bottom">
+          <div class="col">
+            <p><span class="placeholder col-3"></span></p>
+            <h1 class="text-white"><span class="placeholder col-7"></span></h1>
+            <p><span class="placeholder col-5"></span></p>
+          </div>
+        </div>
+        <div class="row justify-content-center mt-3">
+          <div class="spinner-border text-spt-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      </template>
+      <template #default>
+        <CollaboratorManager
+          :id="collabManagerId"
           :playlist-id="playlistId"
-          @removed="fetchData"
+          @updated="fetchData"
         />
-      </div>
-    </div>
+        <PlaylistEditor :id="editPlaylisyId" />
+        <div class="row mt-4 border-bottom">
+          <div class="col">
+            <p>
+              {{ $playlist.isPrivate ? "Private Playlist" : "Public Playlist" }}
+            </p>
+            <h1 class="text-white">{{ $playlist.title! }}</h1>
+            <p>
+              {{ authorName }} ● {{ numeberOfTraks }} songs {{ totalDuration }}
+            </p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-1">
+            <button class="btn rounded-5" v-if="userIsACollab">
+              <span class="fa-regular fa-user-plus"></span>
+            </button>
+            <button
+              class="btn rounded-5"
+              data-bs-toggle="modal"
+              :data-bs-target="'#' + collabManagerId"
+              v-if="userIsOwner"
+            >
+              <span class="fa-solid fa-users"></span>
+            </button>
+          </div>
+          <div class="col-1">
+            <button
+              class="btn rounded-5"
+              data-bs-toggle="modal"
+              :data-bs-target="'#' + editPlaylisyId"
+              v-if="userIsOwner"
+            >
+              <span class="fa-regular fa-pen-to-square"></span>
+            </button>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <TrackRow
+              v-for="(track, index) in playlistTracks"
+              :index="index + 1"
+              :track="track"
+              :playlist-id="playlistId"
+              @removed="fetchData"
+            />
+          </div>
+        </div>
+      </template>
+      <template #error>
+        <div class="row">
+          <h3 class="my-4 text-danger">
+            <span class="fa-solid fa-circle-exclamation"></span>
+            Something went wrong
+            <span class="fa-solid fa-circle-exclamation"></span>
+          </h3>
+          <p>
+            We're sorry, but we were unable to load this playlist data.<br />
+            This could be due to various and multiple reasons... Please, try
+            again or get back to the
+            <RouterLink class="text-spt-primary" :to="{ name: 'home' }"
+              >home</RouterLink
+            >.
+          </p>
+        </div>
+      </template>
+    </SuspenseLayout>
   </div>
 </template>
