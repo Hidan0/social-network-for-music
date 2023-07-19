@@ -5,6 +5,10 @@ import { registerSchema } from "../utils/validator";
 import router from "../router";
 import useUserStore from "../stores/user";
 
+import { useVuert } from "@byloth/vuert";
+
+const vuert = useVuert();
+
 const validation = reactive({
   email: {
     invalid: false,
@@ -41,7 +45,11 @@ const name = ref("");
 const password = ref("");
 const confirmPassword = ref("");
 
+const isSubmitting = ref(false);
+
 const onSubmit = async () => {
+  isSubmitting.value = true;
+
   let res = registerSchema.safeParse({
     email: email.value,
     username: username.value,
@@ -65,6 +73,7 @@ const onSubmit = async () => {
         value.message = "";
       }
     });
+    isSubmitting.value = false;
     return;
   }
 
@@ -82,11 +91,26 @@ const onSubmit = async () => {
       password: password.value,
     });
 
-    console.log(`Success! Welcome ${$user.name}! Redirecting to login page`);
-    router.push({ name: "login" });
+    vuert.emit({
+      message: `Success! Welcome ${$user.name}! Redirecting to login page`,
+      timeout: 1000,
+      type: "success",
+      dismissible: true,
+    });
+
+    setTimeout(() => {
+      router.push({ name: "login" });
+    }, 1010);
   } catch (error: any) {
-    console.log(error.response.data.message);
+    vuert.emit({
+      message: error.response.data.message,
+      timeout: 2500,
+      type: "error",
+      dismissible: true,
+    });
   }
+
+  isSubmitting.value = false;
 };
 </script>
 
@@ -105,7 +129,7 @@ const onSubmit = async () => {
       </div>
     </div>
     <div class="row justify-content-center">
-      <div class="col-6">
+      <div class="col col-lg-6 col-xl-6 col-xxl-6">
         <form class="needs-validation" novalidate @submit.prevent="onSubmit">
           <FormControl
             v-model:value="email"
@@ -151,7 +175,19 @@ const onSubmit = async () => {
             :invalid-message="validation.confirmPassword.message"
           />
           <div class="d-grid mt-4">
-            <button type="submit" class="btn btn-spt-primary">Register</button>
+            <button
+              type="submit"
+              class="btn btn-spt-primary"
+              :class="isSubmitting ? 'disabled' : ''"
+            >
+              <span
+                v-if="isSubmitting"
+                class="spinner-border spinner-border-sm"
+                role="status"
+                aria-hidden="true"
+              ></span
+              >Register
+            </button>
           </div>
         </form>
       </div>
