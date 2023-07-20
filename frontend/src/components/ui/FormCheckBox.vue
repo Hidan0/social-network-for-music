@@ -18,7 +18,7 @@ defineProps({
   },
 });
 
-const emit = defineEmits<{ (event: "update", value: boolean) }>();
+const emit = defineEmits<{ (event: "update", value: boolean): void }>();
 
 const onInput = (evt: Event) => {
   const input = evt.target as HTMLInputElement;

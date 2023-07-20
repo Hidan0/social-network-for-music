@@ -66,6 +66,7 @@ const fetchData = async () => {
 
     isFetching.value = false;
   } catch (error: any) {
+    isFetching.value = false;
     hasFailed.value = true;
     console.log(error.message);
   }

@@ -69,6 +69,7 @@ const onSubmit = async () => {
 
     vuert.emit({
       message: `Success! Welcome back ${$user.name}! Redirecting to home page`,
+      icon: "fa-circle-check",
       timeout: 500,
       type: "success",
       dismissible: true,
@@ -80,6 +81,7 @@ const onSubmit = async () => {
   } catch (error: any) {
     vuert.emit({
       message: error.response.data.message,
+      icon: "fa-circle-exclamation",
       timeout: 2500,
       type: "error",
       dismissible: true,
