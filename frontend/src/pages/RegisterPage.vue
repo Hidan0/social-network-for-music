@@ -93,14 +93,14 @@ const onSubmit = async () => {
 
     vuert.emit({
       message: `Success! Welcome ${$user.name}! Redirecting to login page`,
-      timeout: 1000,
+      timeout: 500,
       type: "success",
       dismissible: true,
     });
 
     setTimeout(() => {
       router.push({ name: "login" });
-    }, 1010);
+    }, 900);
   } catch (error: any) {
     vuert.emit({
       message: error.response.data.message,

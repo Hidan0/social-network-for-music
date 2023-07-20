@@ -5,39 +5,43 @@ const boostrapAdapter = (type: string) => {
   switch (type) {
     case "error":
       return "danger";
-    case "success":
-      return "success";
     default:
-      break;
+      return type;
   }
 };
 </script>
 
 <template>
   <AlertHandler v-slot="{ alert, isOpen, resolve }">
-    <div
-      v-if="isOpen"
-      class="alert"
-      :class="`alert-${boostrapAdapter(alert.type)}`"
-    >
-      <span
-        v-if="alert.type === 'error'"
-        class="fa-solid fa-circle-exclamation"
-      ></span>
-      <span
-        v-else-if="alert.type === 'success'"
-        class="fa-solid fa-circle-check"
-      ></span>
+    <Transition appear name="slide">
+      <div
+        v-if="isOpen"
+        class="alert"
+        :class="`alert-${boostrapAdapter(alert.type)}`"
+      >
+        <span
+          v-if="alert.type === 'error'"
+          class="fa-solid fa-circle-exclamation"
+        ></span>
+        <span
+          v-else-if="alert.type === 'success'"
+          class="fa-solid fa-circle-check"
+        ></span>
 
-      {{ alert.message }}
-      <button v-if="alert.dismissible" class="alert__close" @click="resolve()">
-        <span class="fa-solid fa-circle-xmark"></span>
-      </button>
-    </div>
+        {{ alert.message }}
+        <button
+          v-if="alert.dismissible"
+          class="alert__close"
+          @click="resolve()"
+        >
+          <span class="fa-solid fa-circle-xmark"></span>
+        </button>
+      </div>
+    </Transition>
   </AlertHandler>
 </template>
 
-<style scoped lang="scss">
+<style scoped lang="css">
 .alert__close {
   background-color: transparent;
   border: none;
@@ -47,5 +51,19 @@ const boostrapAdapter = (type: string) => {
 }
 .alert__close:hover {
   opacity: 1;
+}
+
+.slide-enter-active {
+  transition: all 0.3s ease-out;
+}
+
+.slide-leave-active {
+  transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.slide-enter-from,
+.slide-leave-to {
+  transform: translateY(-20px);
+  opacity: 0;
 }
 </style>
