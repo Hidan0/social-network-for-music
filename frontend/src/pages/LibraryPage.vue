@@ -1,31 +1,43 @@
 <script setup lang="ts">
 import { Ref, ref } from "vue";
 
-import SuspenseLayout from "./layout/SuspenseLayout.vue";
-import PlaylistCard from "./ui/PlaylistCard.vue";
+import SuspenseLayout from "../components/layout/SuspenseLayout.vue";
+import PlaylistCard from "../components/ui/PlaylistCard.vue";
 import { PlaylistData } from "../stores/playlist/types";
 
 import usePlaylistStore from "../stores/playlist";
+import useUserStore from "../stores/user";
 
 import { useVuert } from "@byloth/vuert";
 
 const vuert = useVuert();
 
 const $playlist = usePlaylistStore();
+const $user = useUserStore();
 
 const empty = ref(true);
 const playlists: Ref<PlaylistData[]> = ref([]);
-
 const isFetching = ref(true);
 const hasFailed = ref(false);
+
 const loadPublicPlaylists = async () => {
   try {
-    const data = await $playlist.getPublicPlaylists();
+    let data = await $playlist.getPlaylists();
 
     if (data) {
       empty.value = false;
+
+      await Promise.all(
+        data.map(async (playlist: PlaylistData) => {
+          const authorName = await $user.getUsernameFromUserId(playlist.author);
+          playlist.author = authorName;
+          return playlist;
+        })
+      );
+
       playlists.value = data;
     }
+
     isFetching.value = false;
   } catch (error: any) {
     hasFailed.value = true;
@@ -43,7 +55,11 @@ loadPublicPlaylists();
 </script>
 
 <template>
-  <div class="container text-center mt-5">
+  <div class="container text-center">
+    <h2 class="text-spt-primary my-3 text-start">
+      <span class="fa-solid fa-chart-simple"></span>
+      Your playlists
+    </h2>
     <SuspenseLayout :loading="isFetching" :failed="hasFailed">
       <template #loader>
         <div class="row">
@@ -67,8 +83,7 @@ loadPublicPlaylists();
           </div>
         </div>
         <div class="row" v-if="empty">
-          <h3 class="text-spt-primary">There is no public playlist!</h3>
-          <p><a class="fw-bold text-spt-primary">Create one</a> yourself!</p>
+          <h5>Your library looks so empty...</h5>
           <!-- TODO -->
         </div>
       </template>
@@ -80,7 +95,7 @@ loadPublicPlaylists();
             <span class="fa-solid fa-circle-exclamation"></span>
           </h3>
           <p>
-            We're sorry, but we were unable to load public playlists!.<br />
+            We're sorry, but we were unable to load your playlists!.<br />
             This could be due to various and multiple reasons... Please, try
             again.
           </p>

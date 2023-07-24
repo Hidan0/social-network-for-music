@@ -40,6 +40,14 @@ const pages: PageOptions[] = [
       requiresAuth: true,
     },
   },
+  {
+    name: "library",
+    path: "/library",
+    component: () => import("./pages/LibraryPage.vue"),
+    meta: {
+      requiresAuth: true,
+    },
+  },
 ];
 
 const router = createRouter({
