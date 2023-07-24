@@ -12,8 +12,16 @@ const vuert = useVuert();
 
 const $playlist = usePlaylistStore();
 
-defineProps({
+const emit = defineEmits<{
+  (event: "updated"): void;
+}>();
+
+const props = defineProps({
   id: {
+    type: String,
+    required: true,
+  },
+  playlistId: {
     type: String,
     required: true,
   },
@@ -109,10 +117,14 @@ const onSubmit = async () => {
       return;
     }
 
-    // await $user.login({
-    //   email: email.value,
-    //   password: password.value,
-    // });
+    await $playlist.updatePlaylist(props.playlistId, {
+      title: editTitle.value,
+      description: editDescription.value,
+      tags: editTags.value,
+      isPrivate: editIsPrivate.value,
+    });
+
+    emit("updated");
 
     vuert.emit({
       message: "Playlist updated!",

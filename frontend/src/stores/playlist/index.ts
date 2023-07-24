@@ -6,7 +6,7 @@ import useUserStore from "../user";
 const $user = useUserStore();
 
 export default defineStore("playlist", {
-  state: (): PlaylistState => ({
+  state: (): PlaylistState & { outdated: boolean } => ({
     _id: undefined,
     author: undefined,
     title: undefined,
@@ -15,6 +15,7 @@ export default defineStore("playlist", {
     isPrivate: undefined,
     tracks: undefined,
     collaborators: undefined,
+    outdated: false,
   }),
   getters: {
     loaded(): boolean {
@@ -24,13 +25,8 @@ export default defineStore("playlist", {
     },
   },
   actions: {
-    _checkLoaded(): void {
-      if (!this.loaded) {
-        throw new Error("Playlist not loaded");
-      }
-    },
     _isValidId(id: string): boolean {
-      return this._id !== undefined && this._id === id;
+      return this._id !== undefined && this._id === id && !this.outdated;
     },
     async getPublicPlaylists(): Promise<PlaylistData[]> {
       try {
@@ -67,12 +63,17 @@ export default defineStore("playlist", {
           this.isPrivate = res.data.isPrivate;
           this.tracks = res.data.tracks;
           this.collaborators = res.data.collaborators;
+          this.outdated = false;
         } catch (err: any) {
           throw new Error(err.response.data.message);
         }
       }
 
-      this._checkLoaded();
+      if (!this.loaded) {
+        this._id = undefined;
+        this.outdated = true;
+        throw new Error("Can not load this playlist");
+      }
     },
 
     async getTracks(trackIds: string[]): Promise<TrackData[]> {
@@ -128,23 +129,37 @@ export default defineStore("playlist", {
             },
           }
         );
+        this.outdated = true;
       } catch (err: any) {
         throw new Error(err.response.data.message);
       }
     },
-    async updatePlaylist(playlistId: string) {
-      this._checkLoaded();
+    async updatePlaylist(
+      playlistId: string,
+      data: {
+        title: string;
+        description: string;
+        tags: string[];
+        isPrivate: boolean;
+      }
+    ) {
+      if (!this.loaded) {
+        throw new Error(
+          "Unable to update this playlist because it was not loaded correctly"
+        );
+      }
 
       if (!this._isValidId(playlistId)) {
         throw new Error("Invalid playlist id");
       }
 
       try {
-        await axios.patch(`/playlists/${playlistId}`, {
+        await axios.patch(`/playlists/${playlistId}`, data, {
           headers: {
             "SNM-AUTH": $user.token,
           },
         });
+        this.outdated = true;
       } catch (err: any) {
         throw new Error(err.response.data.message);
       }

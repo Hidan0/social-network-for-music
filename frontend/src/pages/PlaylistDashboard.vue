@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, Ref } from "vue";
+import { computed, ref, Ref } from "vue";
 import { useRoute } from "vue-router";
 import usePlaylistStore from "../stores/playlist";
 import { TrackData } from "../stores/playlist/types";
@@ -14,14 +14,17 @@ import CollaboratorManager from "../components/CollaboratorManager.vue";
 const collabManagerId = "manageCollabs";
 
 import PlaylistEditor from "../components/PlaylistEditor.vue";
-const editPlaylisyId = "editPlaylist";
+const editPlaylistId = "editPlaylist";
 
 const route = useRoute();
 
 const $playlist = usePlaylistStore();
 const $user = useUserStore();
 
-const playlistId = route.params.id as string;
+const playlistId = computed((): string => {
+  if (typeof route.params.id === "string") return route.params.id;
+  else return route.params.id[0];
+});
 
 const playlistTracks: Ref<TrackData[]> = ref([]);
 const numeberOfTraks = ref(0);
@@ -36,7 +39,7 @@ const isFetching = ref(true);
 const hasFailed = ref(false);
 const fetchData = async () => {
   try {
-    await $playlist.setPlaylist(playlistId);
+    await $playlist.setPlaylist(playlistId.value);
 
     authorName.value = await $user.getUsernameFromUserId($playlist.author!);
 
@@ -98,7 +101,11 @@ fetchData();
           :playlist-id="playlistId"
           @updated="fetchData"
         />
-        <PlaylistEditor :id="editPlaylisyId" />
+        <PlaylistEditor
+          :id="editPlaylistId"
+          :playlist-id="playlistId"
+          @updated="fetchData"
+        />
         <div class="row mt-4 border-bottom">
           <div class="col">
             <p>
@@ -128,7 +135,7 @@ fetchData();
             <button
               class="btn rounded-5"
               data-bs-toggle="modal"
-              :data-bs-target="'#' + editPlaylisyId"
+              :data-bs-target="'#' + editPlaylistId"
               v-if="userIsOwner"
             >
               <span class="fa-regular fa-pen-to-square"></span>
