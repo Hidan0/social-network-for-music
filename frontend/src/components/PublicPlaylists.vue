@@ -55,7 +55,7 @@ loadPublicPlaylists();
         </div>
       </template>
       <template #default>
-        <div class="row" v-if="!empty">
+        <div class="row justify-content-center" v-if="!empty">
           <div class="col-auto mb-3" v-for="playlist in playlists">
             <PlaylistCard
               :title="playlist.title"

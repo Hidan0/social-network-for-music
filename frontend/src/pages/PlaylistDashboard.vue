@@ -16,6 +16,10 @@ const collabManagerId = "manageCollabs";
 import PlaylistEditor from "../components/PlaylistEditor.vue";
 const editPlaylistId = "editPlaylist";
 
+import { useVuert } from "@byloth/vuert";
+
+const vuert = useVuert();
+
 const route = useRoute();
 
 const $playlist = usePlaylistStore();
@@ -63,7 +67,13 @@ const fetchData = async () => {
         totalDuration.value = convertMsToTime(dur);
       } catch (error: any) {
         hasFailed.value = true;
-        console.log(error.message);
+        vuert.emit({
+          message: error.message,
+          timeout: 2500,
+          icon: "fa-circle-exclamation",
+          type: "error",
+          dismissible: true,
+        });
       }
     }
 
@@ -71,7 +81,13 @@ const fetchData = async () => {
   } catch (error: any) {
     isFetching.value = false;
     hasFailed.value = true;
-    console.log(error.message);
+    vuert.emit({
+      message: error.message,
+      timeout: 2500,
+      icon: "fa-circle-exclamation",
+      type: "error",
+      dismissible: true,
+    });
   }
 };
 
