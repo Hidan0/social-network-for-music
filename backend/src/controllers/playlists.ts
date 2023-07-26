@@ -137,7 +137,13 @@ export const addCollaborator = async (
   try {
     const { id, collId } = req.params;
 
-    if (req.identity._id.toString() === collId) {
+    const playlist = await getPlaylistById(id);
+
+    if (!playlist) {
+      return res.status(404).json({ message: "Playlist not found" });
+    }
+
+    if (playlist.author.toString() === collId) {
       return res.status(400).json({ message: "You are the owner" });
     }
 
@@ -146,7 +152,6 @@ export const addCollaborator = async (
       return res.status(404).json({ message: "User not found" });
     }
 
-    const playlist = req.playlist.toObject();
     if (playlist.collaborators.find((c) => c.toString() === collId)) {
       return res.status(400).json({ message: "Already a collaborator" });
     }
@@ -166,10 +171,6 @@ export const removeCollaborator = async (
   try {
     const { id, collId } = req.params;
 
-    if (req.identity._id.toString() === collId) {
-      return res.status(400).json({ message: "You are the owner" });
-    }
-
     const user = await getUserById(collId);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -177,7 +178,19 @@ export const removeCollaborator = async (
 
     const playlist = req.playlist.toObject();
     if (!playlist.collaborators.find((c) => c.toString() === collId)) {
-      return res.status(400).json({ message: "Not a collaborator" });
+      if (req.identity._id.toString() === collId)
+        return res.status(400).json({ message: "You are the owner" });
+      else return res.status(400).json({ message: "Not a collaborator" });
+    }
+
+    if (
+      req.identity._id.toString() !== playlist.author.toString() &&
+      req.identity._id.toString() !== collId
+    ) {
+      return res.status(403).json({
+        message:
+          "You are not the owner, you can not remove other collaborators",
+      });
     }
 
     const updatedPlaylist = await removeCollaboratorFromPlaylist(id, collId);

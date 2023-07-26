@@ -132,6 +132,10 @@ export default defineStore("playlist", {
       playlistId: string,
       collabId: string
     ): Promise<void> {
+      if (!this._isValidId(playlistId)) {
+        throw new Error("Invalid playlist id");
+      }
+
       try {
         await axios.delete(
           `/playlists/${playlistId}/collaborator/${collabId}`,
@@ -154,7 +158,7 @@ export default defineStore("playlist", {
         tags: string[];
         isPrivate: boolean;
       }
-    ) {
+    ): Promise<void> {
       if (!this.loaded) {
         throw new Error(
           "Unable to update this playlist because it was not loaded correctly"
@@ -174,6 +178,32 @@ export default defineStore("playlist", {
         this.outdated = true;
       } catch (err: any) {
         throw new Error(err.response.data.message);
+      }
+    },
+    async followPlaylist(playlistId: string): Promise<void> {
+      if (!this.loaded) {
+        throw new Error(
+          "Unable to follow this playlist because it was not loaded correctly"
+        );
+      }
+
+      if (!this._isValidId(playlistId)) {
+        throw new Error("Invalid playlist id");
+      }
+
+      try {
+        await axios.put(
+          `/playlists/${playlistId}/collaborator/${$user.id}`,
+          {},
+          {
+            headers: {
+              "SNM-AUTH": $user.token,
+            },
+          }
+        );
+        this.outdated = true;
+      } catch (error: any) {
+        throw new Error(error.response.data.message);
       }
     },
   },

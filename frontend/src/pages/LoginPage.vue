@@ -4,6 +4,7 @@ import FormControl from "../components/ui/FormControl.vue";
 import { loginWithEmailSchema } from "../utils/validator";
 import router from "../router";
 import useUserStore from "../stores/user";
+import usePlaylistStore from "../stores/playlist";
 
 import { useVuert } from "@byloth/vuert";
 
@@ -13,6 +14,7 @@ const email = ref("");
 const password = ref("");
 
 const $user = useUserStore();
+const $playlist = usePlaylistStore();
 
 const validation = reactive({
   email: {
@@ -74,6 +76,8 @@ const onSubmit = async () => {
       type: "success",
       dismissible: true,
     });
+
+    $playlist.$reset();
 
     setTimeout(() => {
       router.push({ name: "home" });

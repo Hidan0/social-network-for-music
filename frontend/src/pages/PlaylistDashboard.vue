@@ -8,6 +8,7 @@ import useUserStore from "../stores/user";
 import { convertMsToTime } from "../utils";
 
 import TrackRow from "../components/TrackRow.vue";
+import SubscribeButton from "../components/SubscribeButton.vue";
 import SuspenseLayout from "../components/layout/SuspenseLayout.vue";
 
 import CollaboratorManager from "../components/CollaboratorManager.vue";
@@ -122,37 +123,38 @@ fetchData();
           :playlist-id="playlistId"
           @updated="fetchData"
         />
-        <div class="row mt-4 border-bottom">
+        <div class="row mt-4">
           <div class="col">
             <p>
               {{ $playlist.isPrivate ? "Private Playlist" : "Public Playlist" }}
             </p>
             <h1 class="text-white">{{ $playlist.title! }}</h1>
-            <p>
+            <p class="mb-1">
               {{ authorName }} ● {{ numeberOfTraks }} songs {{ totalDuration }}
             </p>
           </div>
         </div>
-        <div class="row">
-          <div class="col-1">
-            <button class="btn rounded-5" v-if="userIsACollab">
-              <span class="fa-regular fa-user-plus"></span>
-            </button>
+        <div class="row border-bottom mb-2">
+          <div class="col-1" v-if="!userIsOwner">
+            <SubscribeButton
+              :playlist-id="playlistId"
+              v-model:is-following="userIsACollab"
+            />
+          </div>
+          <div class="col-1" v-if="userIsOwner">
             <button
               class="btn rounded-5"
               data-bs-toggle="modal"
               :data-bs-target="'#' + collabManagerId"
-              v-if="userIsOwner"
             >
               <span class="fa-solid fa-users"></span>
             </button>
           </div>
-          <div class="col-1">
+          <div class="col-1" v-if="userIsOwner">
             <button
               class="btn rounded-5"
               data-bs-toggle="modal"
               :data-bs-target="'#' + editPlaylistId"
-              v-if="userIsOwner"
             >
               <span class="fa-regular fa-pen-to-square"></span>
             </button>

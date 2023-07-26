@@ -27,13 +27,12 @@ export default (router: express.Router) => {
   router.put(
     "/playlists/:id/collaborator/:collId",
     isAuthenticated,
-    isPlaylistAuthor,
     addCollaborator
   );
   router.delete(
     "/playlists/:id/collaborator/:collId",
     isAuthenticated,
-    isPlaylistAuthor,
+    isPlaylistAuthorOrCollaborator,
     removeCollaborator
   );
 
