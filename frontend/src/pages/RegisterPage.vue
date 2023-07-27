@@ -103,7 +103,7 @@ const onSubmit = async () => {
     }, 900);
   } catch (error: any) {
     vuert.emit({
-      message: error.response.data.message,
+      message: error.message,
       timeout: 2500,
       type: "error",
       dismissible: true,

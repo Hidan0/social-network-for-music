@@ -37,54 +37,70 @@ export default defineStore("user", {
       store({ authToken: undefined });
     },
     async register(data: RegisterData): Promise<void> {
-      const res = await axios.post("/auth/register", data);
+      try {
+        const res = await axios.post("/auth/register", data);
 
-      this._setInfo({
-        id: res.data._id,
-        name: res.data.name,
-        email: res.data.email,
-        username: res.data.username,
-      });
+        this._setInfo({
+          id: res.data._id,
+          name: res.data.name,
+          email: res.data.email,
+          username: res.data.username,
+        });
+      } catch (error: any) {
+        throw new Error(error.response.data.message);
+      }
     },
     async login(data: LoginData): Promise<void> {
-      const res = await axios.post("/auth/login", data);
+      try {
+        const res = await axios.post("/auth/login", data);
 
-      this._setToken(res.data.auth.sessionToken);
+        this._setToken(res.data.auth.sessionToken);
 
-      this._setInfo({
-        id: res.data._id,
-        name: res.data.name,
-        email: res.data.email,
-        username: res.data.username,
-      });
+        this._setInfo({
+          id: res.data._id,
+          name: res.data.name,
+          email: res.data.email,
+          username: res.data.username,
+        });
+      } catch (error: any) {
+        throw new Error(error.response.data.message);
+      }
     },
     async verify(): Promise<boolean> {
       if (!this.token) return false;
 
-      const res = await axios.get("/auth/verify", {
-        headers: {
-          "SNM-AUTH": this.token,
-        },
-      });
+      try {
+        const res = await axios.get("/auth/verify", {
+          headers: {
+            "SNM-AUTH": this.token,
+          },
+        });
 
-      if (
-        !res.data.isValid ||
-        (!this.name && !this.email && !this.username && !this.id)
-      ) {
-        this._clearToken();
-        return false;
+        if (
+          !res.data.isValid ||
+          (!this.name && !this.email && !this.username && !this.id)
+        ) {
+          this._clearToken();
+          return false;
+        }
+      } catch (error: any) {
+        throw new Error(error.response.data.message);
       }
 
       return true;
     },
     async getUsernameFromUserId(id: string): Promise<string> {
-      const res = await axios.get(`/users/${id}`, {
-        headers: {
-          "SNM-AUTH": this.token,
-        },
-      });
+      try {
+        const res = await axios.get(`/users/${id}`, {
+          headers: {
+            "SNM-AUTH": this.token,
+          },
+        });
 
-      return res.data.username;
+        return res.data.username;
+      } catch (error: any) {
+        throw new Error(error.response.data.message);
+      }
     },
   },
 });
