@@ -17,16 +17,14 @@ export default defineStore("playlist", {
     collaborators: undefined,
     outdated: false,
   }),
-  getters: {
-    loaded(): boolean {
+  actions: {
+    _isValidId(id: string): boolean {
+      return this._id !== undefined && this._id === id;
+    },
+    _hasLoaded(): boolean {
       return Object.values(this as PlaylistState).every(
         (prop) => prop !== undefined
       );
-    },
-  },
-  actions: {
-    _isValidId(id: string): boolean {
-      return this._id !== undefined && this._id === id && !this.outdated;
     },
     async getPublicPlaylists(): Promise<PlaylistData[]> {
       try {
@@ -59,7 +57,7 @@ export default defineStore("playlist", {
       }
     },
     async setPlaylist(id: string): Promise<void> {
-      if (!this._isValidId(id)) {
+      if (!this._isValidId(id) || this.outdated) {
         try {
           const res = await axios.get(`/playlists/${id}`, {
             headers: {
@@ -76,14 +74,14 @@ export default defineStore("playlist", {
           this.tracks = res.data.tracks;
           this.collaborators = res.data.collaborators;
           this.outdated = false;
+
+          return;
         } catch (err: any) {
           throw new Error(err.response.data.message);
         }
       }
 
-      if (!this.loaded) {
-        this._id = undefined;
-        this.outdated = true;
+      if (!this._hasLoaded()) {
         throw new Error("Can not load this playlist");
       }
     },
@@ -159,7 +157,7 @@ export default defineStore("playlist", {
         isPrivate: boolean;
       }
     ): Promise<void> {
-      if (!this.loaded) {
+      if (!this._hasLoaded()) {
         throw new Error(
           "Unable to update this playlist because it was not loaded correctly"
         );
@@ -181,7 +179,7 @@ export default defineStore("playlist", {
       }
     },
     async followPlaylist(playlistId: string): Promise<void> {
-      if (!this.loaded) {
+      if (!this._hasLoaded()) {
         throw new Error(
           "Unable to follow this playlist because it was not loaded correctly"
         );
