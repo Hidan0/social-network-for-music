@@ -6,15 +6,20 @@ import { useVuert } from "@byloth/vuert";
 const vuert = useVuert();
 
 import usePlaylistStore from "../stores/playlist";
+import useUserStore from "../stores/user";
 
 import Spinner from "../components/ui/Spinner.vue";
+import PlaylistCard from "../components/ui/PlaylistCard.vue";
 import SuspenseLayout from "../components/layout/SuspenseLayout.vue";
 import SearchTrackRow from "../components/SearchTrackRow.vue";
 import { PlaylistData, TrackData } from "../stores/playlist/types";
+import playlist from "../stores/playlist";
 
 const $playlist = usePlaylistStore();
+const $user = useUserStore();
 
 const searchResults: Ref<TrackData[]> = ref([]);
+const searchResultsPlaylist: Ref<PlaylistData[]> = ref([]);
 
 const userPlaylists: Ref<{ id: string; title: string }[]> = ref([]);
 
@@ -26,14 +31,17 @@ const artistQuery = ref("");
 const albumQuery = ref("");
 const yearQuery = ref("");
 
-const emptyTrackResults = ref(true);
+const searchPlaylistQuery = ref("");
 
-const isFetchingTrack = ref(true);
-const hasFailedTrack = ref(false);
+const emptyTrackResults = ref(true);
+const isFetching = ref(true);
+const hasFailed = ref(false);
 const onSearchTrack = async () => {
   try {
     if (searchQuery.value === "") return;
-    isFetchingTrack.value = true;
+
+    isFetching.value = true;
+    hasFailed.value = false;
 
     const tracks = await $playlist.searchByTrack(
       searchQuery.value,
@@ -49,11 +57,11 @@ const onSearchTrack = async () => {
 
     hasNotSearchedYet.value = false;
 
-    isFetchingTrack.value = false;
-    hasFailedTrack.value = false;
+    isFetching.value = false;
+    hasFailed.value = false;
   } catch (error: any) {
-    isFetchingTrack.value = false;
-    hasFailedTrack.value = true;
+    isFetching.value = false;
+    hasFailed.value = true;
 
     vuert.emit({
       message: error.message,
@@ -65,13 +73,54 @@ const onSearchTrack = async () => {
   }
 };
 
-const isFetchingPlaylist = ref(true);
-const hasFailedPlaylist = ref(false);
+const emptyPlaylistsResults = ref(true);
 const onSearchPlaylist = async () => {
   try {
+    if (searchPlaylistQuery.value === "") return;
+
+    isFetching.value = true;
+    hasFailed.value = false;
+    emptyPlaylistsResults.value = true;
+
+    const playlists = await $playlist.getAvailablePlaylists();
+    hasNotSearchedYet.value = false;
+
+    const keyWords = searchPlaylistQuery.value.toLowerCase().split(" ");
+
+    const titles = playlists.filter((playlist: PlaylistData) => {
+      if (
+        keyWords.find((word: string) =>
+          playlist.title.toLowerCase().includes(word)
+        )
+      )
+        return true;
+      else return false;
+    });
+
+    const tags = playlists.filter((playlist: PlaylistData) =>
+      playlist.tags.find((tag: string) => keyWords.includes(tag.toLowerCase()))
+    );
+
+    const data = [...tags, ...titles];
+
+    if (data.length > 0) {
+      emptyPlaylistsResults.value = false;
+      await Promise.all(
+        data.map(async (playlist: PlaylistData) => {
+          const authorName = await $user.getUsernameFromUserId(playlist.author);
+          playlist.author = authorName;
+          return playlist;
+        })
+      );
+
+      searchResultsPlaylist.value = data;
+    }
+
+    isFetching.value = false;
+    hasFailed.value = false;
   } catch (error: any) {
-    isFetchingPlaylist.value = false;
-    hasFailedPlaylist.value = true;
+    isFetching.value = false;
+    hasFailed.value = true;
 
     vuert.emit({
       message: error.message,
@@ -91,7 +140,6 @@ const fetchUserPlaylists = async () => {
       userPlaylists.value.push({ id: playlist._id, title: playlist.title })
     );
   } catch (error: any) {
-    hasFailedTrack.value = true;
     vuert.emit({
       message: error.message,
       icon: "fa-circle-exclamation",
@@ -183,7 +231,7 @@ fetchUserPlaylists();
         <form novalidate @submit.prevent="onSearchPlaylist">
           <div class="input-group rounded">
             <input
-              v-model="searchQuery"
+              v-model="searchPlaylistQuery"
               type="search"
               class="form-control rounded"
               placeholder="Playlist name or tags"
@@ -197,61 +245,47 @@ fetchUserPlaylists();
     </div>
     <div class="row">
       <div v-if="!hasNotSearchedYet">
-        <SuspenseLayout
-          :loading="isFetchingTrack"
-          :failed="hasFailedTrack"
-          v-if="isSearchingTracks"
-        >
+        <SuspenseLayout :loading="isFetching" :failed="hasFailed">
           <template #loader>
             <div class="row justify-content-center mt-3">
               <Spinner />
             </div>
           </template>
           <template #default>
-            <div class="row" v-if="!emptyTrackResults">
-              <div class="col mt-2">
-                <SearchTrackRow
-                  v-for="track in searchResults"
-                  :track="track"
-                  :user-playlists="userPlaylists"
-                />
+            <div v-if="isSearchingTracks">
+              <div class="row" v-if="!emptyTrackResults">
+                <div class="col mt-3">
+                  <SearchTrackRow
+                    v-for="track in searchResults"
+                    :track="track"
+                    :user-playlists="userPlaylists"
+                  />
+                </div>
+              </div>
+              <div class="row" v-else>
+                <h5 class="text-secondary mt-3">No results found</h5>
               </div>
             </div>
-            <div class="row" v-else>
-              <h5 class="text-secondary mt-3">
-                No results found for "{{ searchQuery }}"
-              </h5>
+            <div v-else-if="!isSearchingTracks">
+              <div class="row" v-if="!emptyPlaylistsResults">
+                <div
+                  class="col-auto mt-3"
+                  v-for="playlist in searchResultsPlaylist"
+                >
+                  <PlaylistCard
+                    :title="playlist.title"
+                    :author="playlist.author"
+                    :description="playlist.description"
+                    :tags="playlist.tags"
+                    :id="playlist._id"
+                  />
+                </div>
+              </div>
+              <div class="row" v-else>
+                <h5 class="text-secondary mt-3">No results found</h5>
+              </div>
             </div>
           </template>
-          <template #error>
-            <div class="row">
-              <h3 class="my-4 text-danger">
-                <span class="fa-solid fa-circle-exclamation"></span>
-                Something went wrong
-                <span class="fa-solid fa-circle-exclamation"></span>
-              </h3>
-              <p>
-                We're sorry, but we were unable to search.<br />
-                This could be due to various and multiple reasons... Please, try
-                again or get back to the
-                <RouterLink class="text-spt-primary" :to="{ name: 'home' }"
-                  >home</RouterLink
-                >.
-              </p>
-            </div>
-          </template>
-        </SuspenseLayout>
-        <SuspenseLayout
-          v-else
-          :loading="isFetchingPlaylist"
-          :failed="hasFailedPlaylist"
-        >
-          <template #loader>
-            <div class="row justify-content-center mt-3">
-              <Spinner />
-            </div>
-          </template>
-          <template #default> </template>
           <template #error>
             <div class="row">
               <h3 class="my-4 text-danger">

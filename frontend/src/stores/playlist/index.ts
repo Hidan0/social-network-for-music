@@ -56,6 +56,19 @@ export default defineStore("playlist", {
         throw new Error(err.response.data.message);
       }
     },
+    async getAvailablePlaylists(): Promise<PlaylistData[]> {
+      try {
+        const res = await axios.get("/playlists", {
+          headers: {
+            "SNM-AUTH": $user.token,
+          },
+        });
+
+        return res.data;
+      } catch (err: any) {
+        throw new Error(err.response.data.message);
+      }
+    },
     async setPlaylist(id: string): Promise<void> {
       if (!this._isValidId(id) || this.outdated) {
         try {
