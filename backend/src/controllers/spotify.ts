@@ -33,6 +33,36 @@ export const searchFromSpotify = async (
   }
 };
 
+export const searchByTrack = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  try {
+    const q = req.params.q;
+
+    if (!q) {
+      return res.status(400).json({ message: "Missing query" });
+    }
+
+    const token = await getSpotifyToken();
+    const response = await fetch(
+      `${SPOTY_API}/search?q=${q}&type=track&limit=15`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
+        },
+      }
+    );
+
+    const data = await response.json();
+    return res.status(200).json(data).end();
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
 export const getTracksFromIds = async (
   req: express.Request,
   res: express.Response

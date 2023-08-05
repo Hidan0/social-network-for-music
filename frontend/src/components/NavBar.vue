@@ -44,7 +44,9 @@
               </RouterLink>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#">Explore</a>
+              <RouterLink class="nav-link" :to="{ name: 'explore' }">
+                Explore
+              </RouterLink>
             </li>
             <li class="nav-item">
               <RouterLink class="nav-link" :to="{ name: 'library' }">

@@ -43,9 +43,9 @@ export default defineStore("playlist", {
         throw new Error(err.response.data.message);
       }
     },
-    async getPlaylists(): Promise<PlaylistData[]> {
+    async getLibraryPlaylists(): Promise<PlaylistData[]> {
       try {
-        const res = await axios.get("/playlists/", {
+        const res = await axios.get("/playlists/library", {
           headers: {
             "SNM-AUTH": $user.token,
           },
@@ -112,6 +112,45 @@ export default defineStore("playlist", {
         throw new Error(err.response.data.message);
       }
     },
+    async searchByTrack(
+      track: string,
+      artist: string,
+      album: string,
+      year: string
+    ): Promise<TrackData[]> {
+      try {
+        var q = track;
+        if (artist !== "") q += ` artist:${artist}`;
+        if (album !== "") q += ` album:${album}`;
+        if (year !== "") q += ` year:${year}`;
+
+        const res = await axios.get(
+          `/spotify/search/track/${encodeURIComponent(q)}`,
+          {
+            headers: {
+              "SNM-AUTH": $user.token,
+            },
+          }
+        );
+
+        let tracks: TrackData[] = [];
+
+        res.data.tracks.items.forEach((track: any) => {
+          tracks.push({
+            id: track.id,
+            name: track.name,
+            artist: track.artists[0].name,
+            album: track.album.name,
+            duration: track.duration_ms,
+            imgSrc: track.album.images[2].url,
+          });
+        });
+
+        return tracks;
+      } catch (err: any) {
+        throw new Error(err.response.data.message);
+      }
+    },
     async removeTrackFromPlaylist(
       trackId: string,
       playlistId: string
@@ -122,6 +161,26 @@ export default defineStore("playlist", {
             "SNM-AUTH": $user.token,
           },
         });
+      } catch (err: any) {
+        throw new Error(err.response.data.message);
+      }
+    },
+    async addTrackToPlaylist(
+      playlistId: string,
+      trackId: string
+    ): Promise<void> {
+      try {
+        await axios.post(
+          `/playlists/${playlistId}/tracks`,
+          {
+            track: trackId,
+          },
+          {
+            headers: {
+              "SNM-AUTH": $user.token,
+            },
+          }
+        );
       } catch (err: any) {
         throw new Error(err.response.data.message);
       }

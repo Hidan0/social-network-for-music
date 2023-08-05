@@ -22,7 +22,7 @@ const hasFailed = ref(false);
 
 const loadPublicPlaylists = async () => {
   try {
-    let data = await $playlist.getPlaylists();
+    let data = await $playlist.getLibraryPlaylists();
 
     if (data) {
       empty.value = false;

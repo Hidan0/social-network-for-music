@@ -3,7 +3,7 @@ import { validateCreatePlaylist } from "../validator";
 import {
   createPlaylist,
   getPublicPlaylists,
-  getAllPlaylists,
+  getPlaylistsInLibrary,
   addCollaboratorToPlaylist,
   removeCollaboratorFromPlaylist,
   deletePlaylistById,
@@ -11,6 +11,7 @@ import {
   getPlaylistById,
   pushTrackToPlaylist,
   removeTrackFromPlaylist,
+  getPlaylistsInLibraryOrPublic,
 } from "../db/Playlists";
 import { getUserById } from "../db/Users";
 
@@ -111,7 +112,7 @@ export const getPubPlaylists = async (
   }
 };
 
-export const getPlaylists = async (
+export const getLibraryPlaylists = async (
   req: express.Request,
   res: express.Response
 ) => {
@@ -122,7 +123,26 @@ export const getPlaylists = async (
       return res.status(403).json({ message: "Not authenticated" });
     }
 
-    const playlists = await getAllPlaylists(userId.toString());
+    const playlists = await getPlaylistsInLibrary(userId.toString());
+    return res.status(200).json(playlists).end();
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+export const getAvailablePlaylists = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  try {
+    const userId = req.identity._id;
+
+    if (!userId) {
+      return res.status(403).json({ message: "Not authenticated" });
+    }
+
+    const playlists = await getPlaylistsInLibraryOrPublic(userId.toString());
     return res.status(200).json(playlists).end();
   } catch (error: any) {
     console.log(error);

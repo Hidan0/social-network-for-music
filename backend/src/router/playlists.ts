@@ -6,7 +6,7 @@ import {
   isPlaylistAuthorOrCollaborator,
 } from "../middlewares";
 import {
-  getPlaylists,
+  getLibraryPlaylists,
   createNewPlaylist,
   getPubPlaylists,
   addCollaborator,
@@ -17,11 +17,13 @@ import {
   getTracksFromPlaylist,
   deleteTrackFromPlaylist,
   getPlaylist,
+  getAvailablePlaylists,
 } from "../controllers/playlists";
 
 export default (router: express.Router) => {
   router.post("/playlists/create", isAuthenticated, createNewPlaylist);
-  router.get("/playlists/", isAuthenticated, getPlaylists);
+  router.get("/playlists/", isAuthenticated, getAvailablePlaylists);
+  router.get("/playlists/library", isAuthenticated, getLibraryPlaylists);
   router.get("/playlists/public", getPubPlaylists);
 
   router.put(

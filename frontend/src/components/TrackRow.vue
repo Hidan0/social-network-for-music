@@ -38,12 +38,12 @@ const removeTrack = async () => {
 </script>
 
 <template>
-  <div class="row align-items-center text-center px-2 py-1">
+  <div class="row align-items-center text-center px-2 py-1 track">
     <div class="col-1">{{ index }}</div>
     <div class="col-3 col-md-auto">
       <img :src="track.imgSrc" />
     </div>
-    <div class="col">
+    <div class="col-6 col-sm">
       <div class="row text-spt-primary">{{ track.name }}</div>
       <div class="row text-secondary">{{ track.artist }}</div>
     </div>
@@ -56,3 +56,10 @@ const removeTrack = async () => {
     </div>
   </div>
 </template>
+
+<style scoped lang="css">
+.track:hover {
+  border: 1px solid #169c46;
+  border-radius: 50rem;
+}
+</style>

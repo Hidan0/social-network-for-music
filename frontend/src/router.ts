@@ -48,6 +48,14 @@ const pages: PageOptions[] = [
       requiresAuth: true,
     },
   },
+  {
+    name: "explore",
+    path: "/explore",
+    component: () => import("./pages/ExplorePage.vue"),
+    meta: {
+      requiresAuth: true,
+    },
+  },
 ];
 
 const router = createRouter({
@@ -58,7 +66,12 @@ const router = createRouter({
 const getByRoute = (
   route: RouteLocationNormalized
 ): PageOptions | undefined => {
-  return pages.find((page) => page.path === route.path);
+  return pages.find((page) => {
+    const path = page.path.replace(/\/:id/g, "");
+
+    const regex = new RegExp(`^${path}(\/|$)`);
+    return regex.test(route.path);
+  });
 };
 
 router.beforeEach(async (to, _from) => {
