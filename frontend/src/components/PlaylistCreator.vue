@@ -16,16 +16,20 @@ const emit = defineEmits<{
   (event: "updated"): void;
 }>();
 
-const props = defineProps({
+defineProps({
   id: {
     type: String,
     required: true,
   },
-  playlistId: {
-    type: String,
-    required: true,
-  },
 });
+
+const title = ref("");
+const description = ref("");
+const rawTags = ref("");
+const tags = computed(() => {
+  return rawTags.value.split(" ");
+});
+const isPrivate = ref(false);
 
 const validation = reactive({
   title: {
@@ -43,36 +47,17 @@ const validation = reactive({
     valid: false,
     message: "",
   },
-  isPrivate: {
-    valid: false,
-    invalid: false,
-    message: "",
-  },
 });
-
-const editTags = ref($playlist.tags!);
-const editTitle = ref($playlist.title!);
-const editDescription = ref($playlist.description!);
-const showTags = computed({
-  get() {
-    return editTags.value.join(" ").toString();
-  },
-  set(newTags: string) {
-    editTags.value = newTags.split(" ");
-  },
-});
-const editIsPrivate = ref($playlist.isPrivate!);
 
 const isSubmitting = ref(false);
-
 const onSubmit = async () => {
   isSubmitting.value = true;
 
   const res = createPlaylistSchema.safeParse({
-    title: editTitle.value,
-    description: editDescription.value,
-    tags: editTags.value,
-    isPrivate: editIsPrivate.value,
+    title: title.value,
+    description: description.value,
+    tags: tags.value,
+    isPrivate: isPrivate.value,
   });
 
   if (!res.success) {
@@ -101,31 +86,15 @@ const onSubmit = async () => {
   });
 
   try {
-    if (
-      editTitle.value === $playlist.title &&
-      editDescription.value === $playlist.description &&
-      editIsPrivate.value === $playlist.isPrivate &&
-      editTags.value === $playlist.tags
-    ) {
-      vuert.emit({
-        message: "Nothing to update!",
-        icon: "fa-circle-info",
-        timeout: 1000,
-        type: "info",
-        dismissible: true,
-      });
-      return;
-    }
-
-    await $playlist.updatePlaylist(props.playlistId, {
-      title: editTitle.value,
-      description: editDescription.value,
-      tags: editTags.value,
-      isPrivate: editIsPrivate.value,
+    await $playlist.createPlaylist({
+      title: title.value,
+      description: description.value,
+      tags: tags.value,
+      isPrivate: isPrivate.value,
     });
 
     vuert.emit({
-      message: "Playlist updated!",
+      message: "Playlist created!",
       timeout: 1000,
       icon: "fa-circle-check",
       type: "success",
@@ -158,7 +127,7 @@ const onSubmit = async () => {
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h1 class="modal-title fs-5" :id="`${id}Title`">Edit playlist</h1>
+          <h1 class="modal-title fs-5" :id="`${id}Title`">Create playlist</h1>
           <button
             type="button"
             class="btn-close"
@@ -172,7 +141,7 @@ const onSubmit = async () => {
               type="text"
               id="title"
               label="Title"
-              v-model:value="editTitle"
+              v-model:value="title"
               :invalid="validation.title.invalid"
               :valid="validation.title.valid"
               :invalid-message="validation.title.message"
@@ -181,7 +150,7 @@ const onSubmit = async () => {
               type="text"
               id="description"
               label="Description"
-              v-model:value="editDescription"
+              v-model:value="description"
               :invalid="validation.description.invalid"
               :valid="validation.description.valid"
               :invalid-message="validation.description.message"
@@ -190,7 +159,7 @@ const onSubmit = async () => {
               type="text"
               id="tags"
               label="Tags"
-              v-model:value="showTags"
+              v-model:value="rawTags"
               :invalid="validation.tags.invalid"
               :valid="validation.tags.valid"
               :invalid-message="validation.tags.message"
@@ -198,10 +167,10 @@ const onSubmit = async () => {
             <FormCheckBox
               id="isPrivate"
               label="Private playlist"
-              v-model:value="editIsPrivate"
+              v-model:value="isPrivate"
             />
             <div class="d-grid mt-4">
-              <button type="submit" class="btn btn-spt-primary">Save</button>
+              <button type="submit" class="btn btn-spt-primary">Create</button>
             </div>
           </form>
         </div>

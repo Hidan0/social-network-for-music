@@ -14,16 +14,16 @@ defineProps({
   },
   value: {
     type: Boolean,
-    required: true,
+    default: false,
   },
 });
 
-const emit = defineEmits<{ (event: "update", value: boolean): void }>();
+const emit = defineEmits<{ (event: "update:value", value: boolean): void }>();
 
 const onInput = (evt: Event) => {
   const input = evt.target as HTMLInputElement;
 
-  emit("update", input.value as unknown as boolean);
+  emit("update:value", input.checked);
 };
 </script>
 

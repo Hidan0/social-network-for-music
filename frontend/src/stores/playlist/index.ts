@@ -1,6 +1,11 @@
 import { defineStore } from "pinia";
 import { instance as axios } from "../../utils";
-import { TrackData, PlaylistData, PlaylistState } from "./types";
+import {
+  TrackData,
+  PlaylistData,
+  PlaylistState,
+  CreatePlaylistData,
+} from "./types";
 import useUserStore from "../user";
 
 const $user = useUserStore();
@@ -98,7 +103,17 @@ export default defineStore("playlist", {
         throw new Error("Can not load this playlist");
       }
     },
-
+    async createPlaylist(data: CreatePlaylistData): Promise<void> {
+      try {
+        await axios.post("/playlists/create", data, {
+          headers: {
+            "SNM-AUTH": $user.token,
+          },
+        });
+      } catch (err: any) {
+        throw new Error(err.response.data.message);
+      }
+    },
     async getTracks(trackIds: string[]): Promise<TrackData[]> {
       try {
         const res = await axios.get(`/spotify/tracks/${trackIds.join(",")}`, {
@@ -174,6 +189,7 @@ export default defineStore("playlist", {
             "SNM-AUTH": $user.token,
           },
         });
+        this.outdated = true;
       } catch (err: any) {
         throw new Error(err.response.data.message);
       }
@@ -194,6 +210,7 @@ export default defineStore("playlist", {
             },
           }
         );
+        this.outdated = true;
       } catch (err: any) {
         throw new Error(err.response.data.message);
       }

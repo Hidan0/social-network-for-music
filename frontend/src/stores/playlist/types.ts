@@ -20,6 +20,13 @@ export interface PlaylistState {
   collaborators: string[] | undefined;
 }
 
+export interface CreatePlaylistData {
+  title: string;
+  description: string;
+  tags: string[];
+  isPrivate: boolean;
+}
+
 export interface TrackData {
   id: string;
   name: string;
