@@ -16,7 +16,7 @@ const boostrapAdapter = (type: string) => {
     <Transition appear name="slide">
       <div
         v-if="isOpen"
-        class="alert alert__index"
+        class="alert"
         :class="`alert-${boostrapAdapter(alert.type)}`"
       >
         <span :class="`fa-solid ${alert.icon}`"></span>
@@ -35,9 +35,6 @@ const boostrapAdapter = (type: string) => {
 </template>
 
 <style scoped lang="css">
-.alert__index {
-  z-index: 1056;
-}
 .alert__close {
   background-color: transparent;
   border: none;

@@ -18,7 +18,9 @@ const showBar = computed(() => {
 
 <template>
   <NavBar v-if="showBar" />
-  <div class="container position-absolute top-10 start-50 translate-middle-x">
+  <div
+    class="container position-absolute top-10 start-50 translate-middle-x alert_index"
+  >
     <div class="row justify-content-center">
       <Alert />
     </div>
@@ -28,4 +30,8 @@ const showBar = computed(() => {
 
 <style lang="scss">
 @import "@/assets/scss/index";
+
+.alert_index {
+  z-index: 1057;
+}
 </style>
