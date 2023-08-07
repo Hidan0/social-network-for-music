@@ -4,6 +4,8 @@ export interface UserState {
   name: string | undefined;
   email: string | undefined;
   username: string | undefined;
+  favoriteGenres: string[] | undefined;
+  favoriteArtists: string[] | undefined;
 }
 
 export interface RegisterData {

@@ -10,6 +10,8 @@ export default defineStore("user", {
     name: undefined,
     email: undefined,
     username: undefined,
+    favoriteGenres: undefined,
+    favoriteArtists: undefined,
   }),
   getters: {
     isLogged(): boolean {
@@ -22,11 +24,15 @@ export default defineStore("user", {
       name: string;
       email: string;
       id: string;
+      favoriteGenres?: string[];
+      favoriteArtists?: string[];
     }): void {
       this.id = user.id;
       this.name = user.name;
       this.email = user.email;
       this.username = user.username;
+      this.favoriteGenres = user.favoriteGenres;
+      this.favoriteArtists = user.favoriteArtists;
     },
     _setToken(token: string): void {
       this.token = token;
@@ -53,7 +59,6 @@ export default defineStore("user", {
     async login(data: LoginData): Promise<void> {
       try {
         const res = await axios.post("/auth/login", data);
-
         this._setToken(res.data.auth.sessionToken);
 
         this._setInfo({
@@ -61,6 +66,8 @@ export default defineStore("user", {
           name: res.data.name,
           email: res.data.email,
           username: res.data.username,
+          favoriteGenres: res.data.favorite_genres,
+          favoriteArtists: res.data.favorite_artists,
         });
       } catch (error: any) {
         throw new Error(error.response.data.message);
