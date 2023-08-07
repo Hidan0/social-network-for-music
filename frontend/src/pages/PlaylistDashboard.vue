@@ -44,6 +44,9 @@ const isFetching = ref(true);
 const hasFailed = ref(false);
 const fetchData = async () => {
   try {
+    isFetching.value = true;
+    hasFailed.value = false;
+
     await $playlist.setPlaylist(playlistId.value);
 
     authorName.value = await $user.getUsernameFromUserId($playlist.author!);
@@ -161,7 +164,7 @@ fetchData();
           </div>
         </div>
         <div class="row">
-          <div class="col">
+          <div class="col" v-if="playlistTracks.length !== 0">
             <TrackRow
               v-for="(track, index) in playlistTracks"
               :index="index + 1"
@@ -169,6 +172,14 @@ fetchData();
               :playlist-id="playlistId"
               @removed="fetchData"
             />
+          </div>
+          <div class="col text-center mt-3" v-else>
+            <h5>
+              <RouterLink class="text-spt-primary" :to="{ name: 'explore' }"
+                >Add</RouterLink
+              >
+              some songs!
+            </h5>
           </div>
         </div>
       </template>
