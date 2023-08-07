@@ -13,7 +13,6 @@ import PlaylistCard from "../components/ui/PlaylistCard.vue";
 import SuspenseLayout from "../components/layout/SuspenseLayout.vue";
 import SearchTrackRow from "../components/SearchTrackRow.vue";
 import { PlaylistData, TrackData } from "../stores/playlist/types";
-import playlist from "../stores/playlist";
 
 const $playlist = usePlaylistStore();
 const $user = useUserStore();

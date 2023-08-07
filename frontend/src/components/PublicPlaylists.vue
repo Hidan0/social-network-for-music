@@ -66,10 +66,16 @@ loadPublicPlaylists();
             />
           </div>
         </div>
-        <div class="row" v-if="empty">
+        <div class="row" v-else>
           <h3 class="text-spt-primary">There is no public playlist!</h3>
-          <p><a class="fw-bold text-spt-primary">Create one</a> yourself!</p>
-          <!-- TODO -->
+          <p>
+            <RouterLink
+              class="fw-bold text-spt-primary"
+              :to="{ name: 'library' }"
+              >Create one</RouterLink
+            >
+            yourself!
+          </p>
         </div>
       </template>
       <template #error>
