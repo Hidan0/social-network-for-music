@@ -39,18 +39,23 @@
         <div class="offcanvas-body">
           <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
             <li class="nav-item">
-              <RouterLink class="nav-link active" :to="{ name: 'home' }">
-                Home
+              <RouterLink class="nav-link" :to="{ name: 'home' }">
+                <i class="fa-solid fa-house"></i> Home
               </RouterLink>
             </li>
             <li class="nav-item">
               <RouterLink class="nav-link" :to="{ name: 'explore' }">
-                Explore
+                <i class="fa-solid fa-globe"></i> Explore
               </RouterLink>
             </li>
             <li class="nav-item">
               <RouterLink class="nav-link" :to="{ name: 'library' }">
-                Library
+                <i class="fa-solid fa-chart-simple"></i> Library
+              </RouterLink>
+            </li>
+            <li class="nav-item">
+              <RouterLink class="nav-link" :to="{ name: 'home' }">
+                <i class="fa-solid fa-user"></i> User
               </RouterLink>
             </li>
           </ul>
