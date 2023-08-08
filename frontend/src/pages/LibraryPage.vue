@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Ref, ref } from "vue";
 
+import Spinner from "../components/ui/Spinner.vue";
 import SuspenseLayout from "../components/layout/SuspenseLayout.vue";
 import PlaylistCard from "../components/ui/PlaylistCard.vue";
 import PlaylistCreator from "../components/PlaylistCreator.vue";
@@ -80,9 +81,7 @@ loadPublicPlaylists();
       <template #loader>
         <div class="row">
           <div class="d-flex justify-content-center">
-            <div class="spinner-border" role="status">
-              <span class="visually-hidden">Loading...</span>
-            </div>
+            <Spinner />
           </div>
         </div>
       </template>
@@ -108,7 +107,7 @@ loadPublicPlaylists();
       </template>
       <template #error>
         <div class="row">
-          <h3 class="my-4 text-danger">
+          <h3 class="my-2 text-danger">
             <span class="fa-solid fa-circle-exclamation"></span>
             Something went wrong
             <span class="fa-solid fa-circle-exclamation"></span>

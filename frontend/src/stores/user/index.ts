@@ -109,5 +109,47 @@ export default defineStore("user", {
         throw new Error(error.response.data.message);
       }
     },
+    async getAvaiableGenres(): Promise<string[]> {
+      try {
+        if (store.get("genres") && store.get("genres").length > 0) {
+          return store.get("genres");
+        }
+
+        const res = await axios.get(`/spotify/genres`, {
+          headers: {
+            "SNM-AUTH": this.token,
+          },
+        });
+
+        const genres = res.data.genres;
+        store({ genres: genres });
+        return genres;
+      } catch (error: any) {
+        throw new Error(error.response.data.message);
+      }
+    },
+    async addGenreToFavorites(genre: string): Promise<void> {
+      try {
+        var oldGenres: string[];
+        if (this.favoriteGenres === undefined) oldGenres = [];
+        else oldGenres = this.favoriteGenres;
+
+        if (oldGenres.includes(genre)) return;
+
+        oldGenres.push(genre);
+
+        await axios.patch(
+          `/users/${this.id}/genres`,
+          { genres: oldGenres },
+          {
+            headers: {
+              "SNM-AUTH": this.token,
+            },
+          }
+        );
+      } catch (error: any) {
+        throw new Error(error.response.data.message);
+      }
+    },
   },
 });

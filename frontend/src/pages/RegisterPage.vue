@@ -105,6 +105,7 @@ const onSubmit = async () => {
     vuert.emit({
       message: error.message,
       timeout: 2500,
+      icon: "fa-circle-exclamation",
       type: "error",
       dismissible: true,
     });

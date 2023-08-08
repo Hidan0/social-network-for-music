@@ -90,3 +90,25 @@ export const getTracksFromIds = async (
     return res.status(500).json({ message: error.message });
   }
 };
+
+export const getGenres = async (
+  _req: express.Request,
+  res: express.Response
+) => {
+  try {
+    const token = await getSpotifyToken();
+    const sptRes = await instance.get(
+      "/recommendations/available-genre-seeds",
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
+        },
+      }
+    );
+    return res.status(200).json(sptRes.data).end();
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({ message: error.message });
+  }
+};

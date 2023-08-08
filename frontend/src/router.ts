@@ -56,6 +56,14 @@ const pages: PageOptions[] = [
       requiresAuth: true,
     },
   },
+  {
+    name: "edit-user",
+    path: "/user",
+    component: () => import("./pages/EditUserPage.vue"),
+    meta: {
+      requiresAuth: true,
+    },
+  },
 ];
 
 const router = createRouter({

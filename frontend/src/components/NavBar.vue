@@ -54,7 +54,7 @@
               </RouterLink>
             </li>
             <li class="nav-item">
-              <RouterLink class="nav-link" :to="{ name: 'home' }">
+              <RouterLink class="nav-link" :to="{ name: 'edit-user' }">
                 <i class="fa-solid fa-user"></i> User
               </RouterLink>
             </li>
