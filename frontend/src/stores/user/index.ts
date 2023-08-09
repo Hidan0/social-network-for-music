@@ -174,5 +174,33 @@ export default defineStore("user", {
         throw new Error(error.response.data.message);
       }
     },
+    async addArtistToFavorites(artist: string): Promise<void> {
+      try {
+        const res = await axios.put(
+          `/users/${this.id}/artists`,
+          { artist: artist },
+          {
+            headers: {
+              "SNM-AUTH": this.token,
+            },
+          }
+        );
+        this.favoriteArtists = res.data.favorite_artists;
+      } catch (error: any) {
+        throw new Error(error.response.data.message);
+      }
+    },
+    async removeArtistFromFavorites(artist: string): Promise<void> {
+      try {
+        const res = await axios.delete(`/users/${this.id}/artists/${artist}`, {
+          headers: {
+            "SNM-AUTH": this.token,
+          },
+        });
+        this.favoriteArtists = res.data.favorite_artists;
+      } catch (error: any) {
+        throw new Error(error.response.data.message);
+      }
+    },
   },
 });

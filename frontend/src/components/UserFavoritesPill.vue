@@ -6,18 +6,27 @@ const vuert = useVuert();
 const $user = useUserState();
 
 const props = defineProps({
+  isGenre: {
+    type: Boolean,
+    default: true,
+  },
   genre: {
     type: String,
-    required: true,
+  },
+  artist: {
+    type: String,
   },
 });
 
 const handleClick = async () => {
   try {
-    await $user.removeGenreFromFavorites(props.genre);
+    if (props.isGenre) await $user.removeGenreFromFavorites(props.genre);
+    else await $user.removeArtistFromFavorites(props.artist);
 
     vuert.emit({
-      message: `${props.genre} removed successfully`,
+      message: `${
+        props.isGenre ? props.genre : props.artist
+      } removed successfully`,
       timeout: 500,
       icon: "fa-circle-info",
       type: "info",
@@ -42,7 +51,7 @@ const handleClick = async () => {
   >
     <div class="row">
       <div class="col">
-        {{ genre }}
+        {{ isGenre ? genre : artist }}
       </div>
       <div class="col-auto" style="cursor: pointer" @click="handleClick">
         <i class="fa-solid fa-xmark"></i>

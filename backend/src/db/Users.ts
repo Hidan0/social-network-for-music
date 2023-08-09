@@ -71,3 +71,11 @@ export const removeFavoriteGenre = (id: string, genre: string) =>
   UserModel.findByIdAndUpdate(id, {
     $pull: { favorite_genres: genre },
   });
+export const addFavoriteArtist = (id: string, artist: string) =>
+  UserModel.findByIdAndUpdate(id, {
+    $addToSet: { favorite_artists: artist },
+  });
+export const removeFavoriteArtist = (id: string, artist: string) =>
+  UserModel.findByIdAndUpdate(id, {
+    $pull: { favorite_artists: artist },
+  });
