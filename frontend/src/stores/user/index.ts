@@ -156,5 +156,23 @@ export default defineStore("user", {
         throw new Error(error.response.data.message);
       }
     },
+    async searchArtists(q: string): Promise<string[]> {
+      try {
+        const res = await axios.get(
+          `/spotify/search/artist/${encodeURIComponent(q)}`,
+          {
+            headers: {
+              "SNM-AUTH": this.token,
+            },
+          }
+        );
+
+        return res.data.artists.items.map((item) => {
+          return item.name;
+        });
+      } catch (error: any) {
+        throw new Error(error.response.data.message);
+      }
+    },
   },
 });
