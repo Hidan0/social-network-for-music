@@ -6,6 +6,7 @@
 
 $custom-colors: (
   "spt-primary": variables.$spt-base,
+  "spt-secondary": variables.$spt-secondary,
 );
 
 $theme-colors: map-merge($theme-colors, $custom-colors);

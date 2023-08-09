@@ -1,6 +1,12 @@
 import express from "express";
 
-import { deleteUserById, getUserById, getUsers } from "../db/Users";
+import {
+  addFavoriteGenre,
+  deleteUserById,
+  getUserById,
+  getUsers,
+  removeFavoriteGenre,
+} from "../db/Users";
 
 export const getAllUsers = async (
   _req: express.Request,
@@ -31,23 +37,45 @@ export const deleteUser = async (
   }
 };
 
-export const editGenres = async (
+export const addGenre = async (req: express.Request, res: express.Response) => {
+  try {
+    const { id } = req.params;
+    const { genre } = req.body;
+
+    if (!genre) {
+      return res.status(400).json({ message: "Missing genre" });
+    }
+
+    var user = await getUserById(id);
+    if (user!.favorite_genres.includes(genre)) {
+      return res.status(400).json({ message: "Already a favorite genre" });
+    }
+
+    user = await addFavoriteGenre(id, genre);
+    return res.status(200).json(user).end();
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+export const removeGenre = async (
   req: express.Request,
   res: express.Response
 ) => {
   try {
-    const { id } = req.params;
-    const { genres } = req.body;
+    const { id, genre } = req.params;
 
-    if (!genres) {
-      return res.status(400).json({ message: "Missing genres" });
+    if (!genre) {
+      return res.status(400).json({ message: "Missing genre" });
     }
 
-    const user = await getUserById(id);
-    user!.favorite_genres = genres;
+    var user = await getUserById(id);
+    if (!user!.favorite_genres.includes(genre)) {
+      return res.status(400).json({ message: "Not a favorite genre" });
+    }
 
-    await user!.save();
-
+    user = await removeFavoriteGenre(id, genre);
     return res.status(200).json(user).end();
   } catch (error: any) {
     console.log(error);

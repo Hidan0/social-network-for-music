@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import SuspenseLayout from "../components/layout/SuspenseLayout.vue";
 import Spinner from "../components/ui/Spinner.vue";
-import { ref } from "vue";
+import GenrePill from "../components/GenrePill.vue";
+import { computed, ref } from "vue";
 import useUserState from "../stores/user";
 import { useVuert } from "@byloth/vuert";
 import { Ref } from "vue";
@@ -9,7 +10,7 @@ import { Ref } from "vue";
 const vuert = useVuert();
 const $user = useUserState();
 
-const genres: Ref<string[]> = ref([]);
+const avaiableGenres: Ref<string[]> = ref([]);
 const isFetchingGenres = ref(false);
 const hasFailedFetchingGenres = ref(false);
 const fetchAvaiableGenres = async () => {
@@ -17,7 +18,7 @@ const fetchAvaiableGenres = async () => {
     isFetchingGenres.value = true;
     hasFailedFetchingGenres.value = false;
 
-    genres.value = await $user.getAvaiableGenres();
+    avaiableGenres.value = await $user.getAvaiableGenres();
 
     isFetchingGenres.value = false;
   } catch (error: any) {
@@ -27,6 +28,7 @@ const fetchAvaiableGenres = async () => {
     vuert.emit({
       message: error.message,
       timeout: 2500,
+      icon: "fa-circle-exclamation",
       type: "error",
       dismissible: true,
     });
@@ -35,6 +37,7 @@ const fetchAvaiableGenres = async () => {
 fetchAvaiableGenres();
 
 const isAddingGenre = ref(false);
+const userGenres = computed(() => $user.favoriteGenres);
 const updateFavGenres = async () => {
   try {
     isAddingGenre.value = true;
@@ -67,6 +70,7 @@ const onChange = (evt: Event) => {
 };
 </script>
 
+<!-- TODO: fix reactivity -->
 <template>
   <div class="container text-center">
     <div class="row align-items-center text-center">
@@ -105,7 +109,7 @@ const onChange = (evt: Event) => {
                     @change="onChange"
                   >
                     <option selected>Select genre</option>
-                    <option v-for="genre in genres" :value="genre">
+                    <option v-for="genre in avaiableGenres" :value="genre">
                       {{ genre }}
                     </option>
                   </select>
@@ -129,6 +133,11 @@ const onChange = (evt: Event) => {
                 </div>
               </div>
             </form>
+            <div class="row justify-content-center mt-2">
+              <div class="col col-lg-6 col-xl-6 col-xxl-6">
+                <GenrePill v-for="_genre in userGenres" :genre="_genre" />
+              </div>
+            </div>
           </template>
           <template #error>
             <div class="row">

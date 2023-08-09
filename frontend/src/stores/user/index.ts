@@ -130,23 +130,28 @@ export default defineStore("user", {
     },
     async addGenreToFavorites(genre: string): Promise<void> {
       try {
-        var oldGenres: string[];
-        if (this.favoriteGenres === undefined) oldGenres = [];
-        else oldGenres = this.favoriteGenres;
-
-        if (oldGenres.includes(genre)) return;
-
-        oldGenres.push(genre);
-
-        await axios.patch(
+        const res = await axios.put(
           `/users/${this.id}/genres`,
-          { genres: oldGenres },
+          { genre: genre },
           {
             headers: {
               "SNM-AUTH": this.token,
             },
           }
         );
+        this.favoriteGenres = res.data.favorite_genres;
+      } catch (error: any) {
+        throw new Error(error.response.data.message);
+      }
+    },
+    async removeGenreFromFavorites(genre: string): Promise<void> {
+      try {
+        const res = await axios.delete(`/users/${this.id}/genres/${genre}`, {
+          headers: {
+            "SNM-AUTH": this.token,
+          },
+        });
+        this.favoriteGenres = res.data.favorite_genres;
       } catch (error: any) {
         throw new Error(error.response.data.message);
       }

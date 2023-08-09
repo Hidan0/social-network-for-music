@@ -63,3 +63,11 @@ export const deleteUserById = (id: string) =>
   UserModel.findOneAndDelete({ _id: id });
 export const updateUserById = (id: string, values: Record<string, any>) =>
   UserModel.findByIdAndUpdate(id, values);
+export const addFavoriteGenre = (id: string, genre: string) =>
+  UserModel.findByIdAndUpdate(id, {
+    $addToSet: { favorite_genres: genre },
+  });
+export const removeFavoriteGenre = (id: string, genre: string) =>
+  UserModel.findByIdAndUpdate(id, {
+    $pull: { favorite_genres: genre },
+  });
