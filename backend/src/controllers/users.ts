@@ -51,7 +51,8 @@ export const addGenre = async (req: express.Request, res: express.Response) => {
       return res.status(400).json({ message: "Already a favorite genre" });
     }
 
-    user = await addFavoriteGenre(id, genre);
+    await addFavoriteGenre(id, genre);
+    user!.favorite_genres.push(genre);
     return res.status(200).json(user).end();
   } catch (error: any) {
     console.log(error);
@@ -75,7 +76,10 @@ export const removeGenre = async (
       return res.status(400).json({ message: "Not a favorite genre" });
     }
 
-    user = await removeFavoriteGenre(id, genre);
+    await removeFavoriteGenre(id, genre);
+    user!.favorite_genres = user!.favorite_genres.filter(
+      (gen: string) => gen !== genre
+    );
     return res.status(200).json(user).end();
   } catch (error: any) {
     console.log(error);

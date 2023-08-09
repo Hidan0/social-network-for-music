@@ -9,6 +9,7 @@ import { Ref } from "vue";
 
 const vuert = useVuert();
 const $user = useUserState();
+console.log($user.favoriteGenres);
 
 const avaiableGenres: Ref<string[]> = ref([]);
 const isFetchingGenres = ref(false);
@@ -68,9 +69,33 @@ const selectedGenre = ref("");
 const onChange = (evt: Event) => {
   selectedGenre.value = (evt.target as HTMLSelectElement).value;
 };
+
+const isFetchingArtists = ref(false);
+const hasFailedFetchingArtists = ref(false);
+const fetchAvaiableArtists = async () => {
+  try {
+    isFetchingArtists.value = true;
+    hasFailedFetchingArtists.value = false;
+
+    // avaiableGenres.value = await $user.getAvaiableGenres();
+
+    isFetchingArtists.value = false;
+  } catch (error: any) {
+    isFetchingArtists.value = false;
+    hasFailedFetchingArtists.value = true;
+
+    vuert.emit({
+      message: error.message,
+      timeout: 2500,
+      icon: "fa-circle-exclamation",
+      type: "error",
+      dismissible: true,
+    });
+  }
+};
+fetchAvaiableArtists();
 </script>
 
-<!-- TODO: fix reactivity -->
 <template>
   <div class="container text-center">
     <div class="row align-items-center text-center">
@@ -148,6 +173,79 @@ const onChange = (evt: Event) => {
               </h5>
               <p>
                 We're sorry, but we were unable to load music genres!.<br />
+                This could be due to various and multiple reasons... Please, try
+                again.
+              </p>
+            </div>
+          </template>
+        </SuspenseLayout>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col">
+        <h4 class="text-spt-primary my-3 text-start">Favorite artists</h4>
+        <SuspenseLayout
+          :loading="isFetchingArtists"
+          :failed="hasFailedFetchingArtists"
+        >
+          <template #loader>
+            <div class="row">
+              <div class="d-flex justify-content-center">
+                <Spinner />
+              </div>
+            </div>
+          </template>
+          <template #default>
+            <form
+              class="needs-validation"
+              novalidate
+              @submit.prevent="updateFavGenres"
+            >
+              <div class="row">
+                <div class="col">
+                  <select
+                    class="form-select"
+                    aria-label="Default select example"
+                    @change="onChange"
+                  >
+                    <option selected>Select genre</option>
+                    <option v-for="genre in avaiableGenres" :value="genre">
+                      {{ genre }}
+                    </option>
+                  </select>
+                </div>
+                <div class="col-3">
+                  <div class="d-grid">
+                    <button
+                      type="submit"
+                      class="btn btn-spt-primary"
+                      :class="isAddingGenre ? 'disabled' : ''"
+                    >
+                      <span
+                        v-if="isAddingGenre"
+                        class="spinner-border spinner-border-sm"
+                        role="status"
+                        aria-hidden="true"
+                      ></span
+                      >Add artist
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </form>
+            <div class="row justify-content-center mt-2">
+              <div class="col col-lg-6 col-xl-6 col-xxl-6"></div>
+            </div>
+          </template>
+          <template #error>
+            <div class="row">
+              <h5 class="my-4 text-danger">
+                <span class="fa-solid fa-circle-exclamation"></span>
+                Something went wrong
+                <span class="fa-solid fa-circle-exclamation"></span>
+              </h5>
+              <p>
+                We're sorry, but we were unable to load artits!.<br />
                 This could be due to various and multiple reasons... Please, try
                 again.
               </p>
