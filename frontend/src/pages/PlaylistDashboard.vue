@@ -174,11 +174,14 @@ fetchData();
             />
           </div>
           <div class="col text-center mt-3" v-else>
-            <h5>
+            <h5 v-if="userIsOwner || userIsACollab">
               <RouterLink class="text-spt-primary" :to="{ name: 'explore' }"
                 >Add</RouterLink
               >
               some songs!
+            </h5>
+            <h5 v-else>
+              <i class="fa-solid fa-robot"></i> this place looks so empty...
             </h5>
           </div>
         </div>
