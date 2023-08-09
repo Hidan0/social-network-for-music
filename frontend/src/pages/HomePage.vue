@@ -45,7 +45,15 @@ checkIfUserHasSetFavGenres();
 </script>
 
 <template>
-  <div class="container">
+  <div class="container text-center">
+    <div class="row align-items-center text-center">
+      <div class="col">
+        <h2 class="text-spt-primary my-3 text-start">
+          <span class="fa-solid fa-home"></span>
+          Home page
+        </h2>
+      </div>
+    </div>
     <div class="row">
       <PublicPlaylists />
     </div>

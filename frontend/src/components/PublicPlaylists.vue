@@ -43,7 +43,7 @@ loadPublicPlaylists();
 </script>
 
 <template>
-  <div class="container text-center mt-5">
+  <div class="container text-center">
     <SuspenseLayout :loading="isFetching" :failed="hasFailed">
       <template #loader>
         <div class="row">
