@@ -167,7 +167,7 @@ export default defineStore("user", {
           }
         );
 
-        return res.data.artists.items.map((item) => {
+        return res.data.artists.items.map((item: { name: string }) => {
           return item.name;
         });
       } catch (error: any) {
