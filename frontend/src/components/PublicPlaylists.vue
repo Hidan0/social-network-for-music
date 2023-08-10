@@ -67,7 +67,7 @@ loadPublicPlaylists();
           </div>
         </div>
         <div class="row" v-else>
-          <h3 class="text-spt-primary">There is no public playlist!</h3>
+          <h3 class="text-spt-primary">There is no public playlist yet!</h3>
           <p>
             <RouterLink
               class="fw-bold text-spt-primary"

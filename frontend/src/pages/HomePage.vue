@@ -54,8 +54,19 @@ checkIfUserHasSetFavGenres();
         </h2>
       </div>
     </div>
-    <div class="row">
+    <div class="row my-1">
       <PublicPlaylists />
+    </div>
+    <div class="row my-1">
+      <div class="col">
+        <p>
+          Didn't find what you were looking for? <br />
+          Try to search
+          <RouterLink class="fw-bold text-spt-primary" :to="{ name: 'explore' }"
+            >here</RouterLink
+          >!
+        </p>
+      </div>
     </div>
   </div>
 </template>
