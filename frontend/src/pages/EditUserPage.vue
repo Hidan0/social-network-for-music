@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import SuspenseLayout from "../components/layout/SuspenseLayout.vue";
 import Spinner from "../components/ui/Spinner.vue";
+import FormControl from "../components/ui/FormControl.vue";
 import UserFavoritesPill from "../components/UserFavoritesPill.vue";
-import { computed, ref } from "vue";
+import { computed, reactive, ref } from "vue";
 import useUserState from "../stores/user";
 import { useVuert } from "@byloth/vuert";
 import { Ref } from "vue";
+import { registerSchema, updateOnlyInfoSchema } from "../utils/validator";
 
 const vuert = useVuert();
 const $user = useUserState();
@@ -115,6 +117,139 @@ const updateFavArtists = async () => {
     });
   }
 };
+
+const validation = reactive({
+  email: {
+    invalid: false,
+    valid: false,
+    message: "",
+  },
+  username: {
+    invalid: false,
+    valid: false,
+    message: "",
+  },
+  name: {
+    valid: false,
+    invalid: false,
+    message: "",
+  },
+  password: {
+    valid: false,
+    invalid: false,
+    message: "",
+  },
+  confirmPassword: {
+    valid: false,
+    invalid: false,
+    message: "",
+  },
+});
+
+const email = ref($user.email!);
+const username = ref($user.username!);
+const name = ref($user.name!);
+const password = ref("");
+const confirmPassword = ref("");
+
+const isSubmitting = ref(false);
+const updateUserInfo = async () => {
+  isSubmitting.value = true;
+
+  let res;
+  if (password.value === "" && confirmPassword.value === "")
+    res = updateOnlyInfoSchema.safeParse({
+      email: email.value,
+      name: name.value,
+      username: username.value,
+    });
+  else
+    res = registerSchema.safeParse({
+      email: email.value,
+      username: username.value,
+      name: name.value,
+      password: password.value,
+      confirmPassword: confirmPassword.value,
+    });
+
+  if (!res.success) {
+    const issues = res.error.issues;
+
+    Object.entries(validation).forEach(([key, value]) => {
+      const issue = issues.find((issue) => issue.path.includes(key));
+      if (issue) {
+        value.invalid = true;
+        value.valid = false;
+        value.message = issue.message;
+      } else {
+        value.valid = true;
+        value.invalid = false;
+        value.message = "";
+      }
+    });
+    isSubmitting.value = false;
+    return;
+  }
+
+  Object.entries(validation).forEach(([_, value]) => {
+    value.valid = true;
+    value.invalid = false;
+    value.message = "";
+  });
+
+  try {
+    if (
+      email.value === $user.email &&
+      username.value === $user.username &&
+      name.value === $user.name &&
+      password.value === "" &&
+      confirmPassword.value === ""
+    ) {
+      isSubmitting.value = false;
+      vuert.emit({
+        message: "Nothing to update!",
+        icon: "fa-circle-info",
+        timeout: 1000,
+        type: "info",
+        dismissible: true,
+      });
+      return;
+    }
+
+    if (password.value === "" && confirmPassword.value === "") {
+      await $user.updateUserInfo({
+        email: email.value,
+        username: username.value,
+        name: name.value,
+      });
+    } else {
+      await $user.updateUserInfo({
+        email: email.value,
+        username: username.value,
+        name: name.value,
+        password: password.value,
+      });
+    }
+
+    vuert.emit({
+      message: `User info updated successfully!`,
+      icon: "fa-circle-check",
+      timeout: 1000,
+      type: "success",
+      dismissible: true,
+    });
+  } catch (error: any) {
+    vuert.emit({
+      message: error.message,
+      timeout: 2500,
+      icon: "fa-circle-exclamation",
+      type: "error",
+      dismissible: true,
+    });
+  }
+
+  isSubmitting.value = false;
+};
 </script>
 
 <template>
@@ -208,7 +343,6 @@ const updateFavArtists = async () => {
     <div class="row justify-content-center">
       <div class="col">
         <h4 class="text-spt-primary my-3 text-start">Favorite artists</h4>
-
         <form
           class="needs-validation"
           novalidate
@@ -263,6 +397,78 @@ const updateFavArtists = async () => {
               :artist="artist"
             />
           </div>
+        </div>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col">
+        <h4 class="text-spt-primary my-3 text-start">User info</h4>
+
+        <div class="col">
+          <form
+            class="needs-validation"
+            novalidate
+            @submit.prevent="updateUserInfo"
+          >
+            <FormControl
+              v-model:value="email"
+              type="email"
+              id="email"
+              label="Email address"
+              :invalid="validation.email.invalid"
+              :valid="validation.email.valid"
+              :invalid-message="validation.email.message"
+            />
+            <FormControl
+              v-model:value="username"
+              id="username"
+              label="Username"
+              :invalid="validation.username.invalid"
+              :valid="validation.username.valid"
+              :invalid-message="validation.username.message"
+            />
+            <FormControl
+              v-model:value="name"
+              id="name"
+              label="Name"
+              :invalid="validation.name.invalid"
+              :valid="validation.name.valid"
+              :invalid-message="validation.name.message"
+            />
+            <FormControl
+              v-model:value="password"
+              type="password"
+              id="password"
+              label="Password"
+              :invalid="validation.password.invalid"
+              :valid="validation.password.valid"
+              :invalid-message="validation.password.message"
+            />
+            <FormControl
+              v-model:value="confirmPassword"
+              type="password"
+              id="confirmPassword"
+              label="Confirm password"
+              :invalid="validation.confirmPassword.invalid"
+              :valid="validation.confirmPassword.valid"
+              :invalid-message="validation.confirmPassword.message"
+            />
+            <div class="d-grid mt-4">
+              <button
+                type="submit"
+                class="btn btn-spt-primary"
+                :class="isSubmitting ? 'disabled' : ''"
+              >
+                <span
+                  v-if="isSubmitting"
+                  class="spinner-border spinner-border-sm"
+                  role="status"
+                  aria-hidden="true"
+                ></span
+                >Update
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>

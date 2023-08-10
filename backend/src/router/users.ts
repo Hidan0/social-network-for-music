@@ -7,6 +7,7 @@ import {
   addGenre,
   removeArtist,
   addArtist,
+  updateUser,
 } from "../controllers/users";
 import { isAuthenticated, isOwner } from "../middlewares";
 
@@ -28,4 +29,5 @@ export default (router: express.Router) => {
     removeArtist
   );
   router.put("/users/:id/artists", isAuthenticated, isOwner, addArtist);
+  router.patch("/users/:id", isAuthenticated, isOwner, updateUser);
 };

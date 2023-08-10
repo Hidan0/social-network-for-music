@@ -46,6 +46,12 @@ export const registerSchema = z
     }
   );
 
+export const updateOnlyInfoSchema = z.object({
+  email: emailSchema,
+  username: usernameSchema,
+  name: nameSchema,
+});
+
 export const loginWithEmailSchema = z.object({
   email: emailSchema,
   password: passwordSchema,

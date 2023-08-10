@@ -202,5 +202,32 @@ export default defineStore("user", {
         throw new Error(error.response.data.message);
       }
     },
+    async updateUserInfo(data: {
+      email: string;
+      username: string;
+      name: string;
+      password?: string;
+    }): Promise<void> {
+      try {
+        const res = await axios.patch(`/users/${this.id}`, data, {
+          headers: {
+            "SNM-AUTH": this.token,
+          },
+        });
+
+        console.log(res);
+        this._setToken(res.data.auth.sessionToken);
+        this._setInfo({
+          id: res.data._id,
+          name: res.data.name,
+          email: res.data.email,
+          username: res.data.username,
+          favoriteGenres: res.data.favorite_genres,
+          favoriteArtists: res.data.favorite_artists,
+        });
+      } catch (error: any) {
+        throw new Error(error.response.data.message);
+      }
+    },
   },
 });
