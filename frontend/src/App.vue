@@ -19,7 +19,7 @@ const showBar = computed(() => {
 <template>
   <NavBar v-if="showBar" />
   <div
-    class="container position-absolute top-10 start-50 translate-middle-x alert_index"
+    class="container position-fixed top-10 start-50 translate-middle-x alert_index"
   >
     <div class="row justify-content-center">
       <Alert />
