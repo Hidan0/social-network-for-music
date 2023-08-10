@@ -1,4 +1,14 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import useUserStore from "../stores/user";
+import router from "../router";
+
+const $user = useUserStore();
+
+const logout = () => {
+  $user.logout();
+  router.push({ name: "login" });
+};
+</script>
 
 <template>
   <nav class="navbar navbar-expand-lg bg-body-tertiary">
@@ -57,6 +67,11 @@
               <RouterLink class="nav-link" :to="{ name: 'edit-user' }">
                 <i class="fa-solid fa-user"></i> User
               </RouterLink>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-danger" @click="logout">
+                <i class="fa-solid fa-right-from-bracket"></i> Logout
+              </a>
             </li>
           </ul>
         </div>

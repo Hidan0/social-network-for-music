@@ -96,6 +96,9 @@ export default defineStore("user", {
 
       return true;
     },
+    logout(): void {
+      this._clearToken();
+    },
     async getUsernameFromUserId(id: string): Promise<string> {
       try {
         const res = await axios.get(`/users/${id}`, {
