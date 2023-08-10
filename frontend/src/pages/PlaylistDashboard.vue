@@ -170,6 +170,7 @@ fetchData();
               :index="index + 1"
               :track="track"
               :playlist-id="playlistId"
+              :user-can-remove="userIsOwner || userIsACollab"
               @removed="fetchData"
             />
           </div>

@@ -21,6 +21,10 @@ const props = defineProps({
     type: Number,
     required: true,
   },
+  userCanRemove: {
+    type: Boolean,
+    required: true,
+  },
 });
 
 const emit = defineEmits<{
@@ -51,7 +55,7 @@ const removeTrack = async () => {
     <div class="col-1 d-none d-md-block">
       {{ convertMsToTime(track.duration) }}
     </div>
-    <div class="col-1">
+    <div class="col-1" v-if="userCanRemove">
       <DeleteBtn @click="removeTrack" />
     </div>
   </div>
