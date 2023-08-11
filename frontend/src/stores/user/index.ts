@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import { UserState, RegisterData, LoginData } from "./types";
 import { instance as axios } from "../../utils";
 import store from "store2";
+import { AxiosError } from "axios";
 
 export default defineStore("user", {
   state: (): UserState => ({
@@ -53,7 +54,12 @@ export default defineStore("user", {
           username: res.data.username,
         });
       } catch (error: any) {
-        throw new Error(error.response.data.message);
+        switch (true) {
+          case error instanceof AxiosError:
+            throw new Error(error.response.data.message);
+          default:
+            throw new Error("Internal error");
+        }
       }
     },
     async login(data: LoginData): Promise<void> {
@@ -70,7 +76,12 @@ export default defineStore("user", {
           favoriteArtists: res.data.favorite_artists,
         });
       } catch (error: any) {
-        throw new Error(error.response.data.message);
+        switch (true) {
+          case error instanceof AxiosError:
+            throw new Error(error.response.data.message);
+          default:
+            throw new Error("Internal error");
+        }
       }
     },
     async verify(): Promise<boolean> {
@@ -91,7 +102,12 @@ export default defineStore("user", {
           return false;
         }
       } catch (error: any) {
-        throw new Error(error.response.data.message);
+        switch (true) {
+          case error instanceof AxiosError:
+            throw new Error(error.response.data.message);
+          default:
+            throw new Error("Internal error");
+        }
       }
 
       return true;
@@ -109,7 +125,12 @@ export default defineStore("user", {
 
         return res.data.username;
       } catch (error: any) {
-        throw new Error(error.response.data.message);
+        switch (true) {
+          case error instanceof AxiosError:
+            throw new Error(error.response.data.message);
+          default:
+            throw new Error("Internal error");
+        }
       }
     },
     async getAvaiableGenres(): Promise<string[]> {
@@ -128,7 +149,12 @@ export default defineStore("user", {
         store({ genres: genres });
         return genres;
       } catch (error: any) {
-        throw new Error(error.response.data.message);
+        switch (true) {
+          case error instanceof AxiosError:
+            throw new Error(error.response.data.message);
+          default:
+            throw new Error("Internal error");
+        }
       }
     },
     async addGenreToFavorites(genre: string): Promise<void> {
@@ -144,7 +170,12 @@ export default defineStore("user", {
         );
         this.favoriteGenres = res.data.favorite_genres;
       } catch (error: any) {
-        throw new Error(error.response.data.message);
+        switch (true) {
+          case error instanceof AxiosError:
+            throw new Error(error.response.data.message);
+          default:
+            throw new Error("Internal error");
+        }
       }
     },
     async removeGenreFromFavorites(genre: string): Promise<void> {
@@ -156,7 +187,12 @@ export default defineStore("user", {
         });
         this.favoriteGenres = res.data.favorite_genres;
       } catch (error: any) {
-        throw new Error(error.response.data.message);
+        switch (true) {
+          case error instanceof AxiosError:
+            throw new Error(error.response.data.message);
+          default:
+            throw new Error("Internal error");
+        }
       }
     },
     async searchArtists(q: string): Promise<string[]> {
@@ -174,7 +210,12 @@ export default defineStore("user", {
           return item.name;
         });
       } catch (error: any) {
-        throw new Error(error.response.data.message);
+        switch (true) {
+          case error instanceof AxiosError:
+            throw new Error(error.response.data.message);
+          default:
+            throw new Error("Internal error");
+        }
       }
     },
     async addArtistToFavorites(artist: string): Promise<void> {
@@ -190,7 +231,12 @@ export default defineStore("user", {
         );
         this.favoriteArtists = res.data.favorite_artists;
       } catch (error: any) {
-        throw new Error(error.response.data.message);
+        switch (true) {
+          case error instanceof AxiosError:
+            throw new Error(error.response.data.message);
+          default:
+            throw new Error("Internal error");
+        }
       }
     },
     async removeArtistFromFavorites(artist: string): Promise<void> {
@@ -202,7 +248,12 @@ export default defineStore("user", {
         });
         this.favoriteArtists = res.data.favorite_artists;
       } catch (error: any) {
-        throw new Error(error.response.data.message);
+        switch (true) {
+          case error instanceof AxiosError:
+            throw new Error(error.response.data.message);
+          default:
+            throw new Error("Internal error");
+        }
       }
     },
     async updateUserInfo(data: {
@@ -229,7 +280,12 @@ export default defineStore("user", {
           favoriteArtists: res.data.favorite_artists,
         });
       } catch (error: any) {
-        throw new Error(error.response.data.message);
+        switch (true) {
+          case error instanceof AxiosError:
+            throw new Error(error.response.data.message);
+          default:
+            throw new Error("Internal error");
+        }
       }
     },
   },

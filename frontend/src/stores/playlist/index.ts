@@ -7,6 +7,7 @@ import {
   CreatePlaylistData,
 } from "./types";
 import useUserStore from "../user";
+import { AxiosError } from "axios";
 
 const $user = useUserStore();
 
@@ -44,8 +45,13 @@ export default defineStore("playlist", {
             description: playlist.description,
           } as PlaylistData;
         }) as PlaylistData[];
-      } catch (err: any) {
-        throw new Error(err.response.data.message);
+      } catch (error: any) {
+        switch (true) {
+          case error instanceof AxiosError:
+            throw new Error(error.response.data.message);
+          default:
+            throw new Error("Internal error");
+        }
       }
     },
     async getLibraryPlaylists(): Promise<PlaylistData[]> {
@@ -57,8 +63,13 @@ export default defineStore("playlist", {
         });
 
         return res.data;
-      } catch (err: any) {
-        throw new Error(err.response.data.message);
+      } catch (error: any) {
+        switch (true) {
+          case error instanceof AxiosError:
+            throw new Error(error.response.data.message);
+          default:
+            throw new Error("Internal error");
+        }
       }
     },
     async getAvailablePlaylists(): Promise<PlaylistData[]> {
@@ -70,8 +81,13 @@ export default defineStore("playlist", {
         });
 
         return res.data;
-      } catch (err: any) {
-        throw new Error(err.response.data.message);
+      } catch (error: any) {
+        switch (true) {
+          case error instanceof AxiosError:
+            throw new Error(error.response.data.message);
+          default:
+            throw new Error("Internal error");
+        }
       }
     },
     async setPlaylist(id: string): Promise<void> {
@@ -94,8 +110,13 @@ export default defineStore("playlist", {
           this.outdated = false;
 
           return;
-        } catch (err: any) {
-          throw new Error(err.response.data.message);
+        } catch (error: any) {
+          switch (true) {
+            case error instanceof AxiosError:
+              throw new Error(error.response.data.message);
+            default:
+              throw new Error("Internal error");
+          }
         }
       }
 
@@ -110,8 +131,13 @@ export default defineStore("playlist", {
             "SNM-AUTH": $user.token,
           },
         });
-      } catch (err: any) {
-        throw new Error(err.response.data.message);
+      } catch (error: any) {
+        switch (true) {
+          case error instanceof AxiosError:
+            throw new Error(error.response.data.message);
+          default:
+            throw new Error("Internal error");
+        }
       }
     },
     async getTracks(trackIds: string[]): Promise<TrackData[]> {
@@ -136,8 +162,13 @@ export default defineStore("playlist", {
         });
 
         return tracks;
-      } catch (err: any) {
-        throw new Error(err.response.data.message);
+      } catch (error: any) {
+        switch (true) {
+          case error instanceof AxiosError:
+            throw new Error(error.response.data.message);
+          default:
+            throw new Error("Internal error");
+        }
       }
     },
     async searchByTrack(
@@ -175,8 +206,13 @@ export default defineStore("playlist", {
         });
 
         return tracks;
-      } catch (err: any) {
-        throw new Error(err.response.data.message);
+      } catch (error: any) {
+        switch (true) {
+          case error instanceof AxiosError:
+            throw new Error(error.response.data.message);
+          default:
+            throw new Error("Internal error");
+        }
       }
     },
     async removeTrackFromPlaylist(
@@ -190,8 +226,13 @@ export default defineStore("playlist", {
           },
         });
         this.outdated = true;
-      } catch (err: any) {
-        throw new Error(err.response.data.message);
+      } catch (error: any) {
+        switch (true) {
+          case error instanceof AxiosError:
+            throw new Error(error.response.data.message);
+          default:
+            throw new Error("Internal error");
+        }
       }
     },
     async addTrackToPlaylist(
@@ -211,8 +252,13 @@ export default defineStore("playlist", {
           }
         );
         this.outdated = true;
-      } catch (err: any) {
-        throw new Error(err.response.data.message);
+      } catch (error: any) {
+        switch (true) {
+          case error instanceof AxiosError:
+            throw new Error(error.response.data.message);
+          default:
+            throw new Error("Internal error");
+        }
       }
     },
     async removeCollaboratorFromPlaylist(
@@ -233,8 +279,13 @@ export default defineStore("playlist", {
           }
         );
         this.outdated = true;
-      } catch (err: any) {
-        throw new Error(err.response.data.message);
+      } catch (error: any) {
+        switch (true) {
+          case error instanceof AxiosError:
+            throw new Error(error.response.data.message);
+          default:
+            throw new Error("Internal error");
+        }
       }
     },
     async updatePlaylist(
@@ -263,8 +314,13 @@ export default defineStore("playlist", {
           },
         });
         this.outdated = true;
-      } catch (err: any) {
-        throw new Error(err.response.data.message);
+      } catch (error: any) {
+        switch (true) {
+          case error instanceof AxiosError:
+            throw new Error(error.response.data.message);
+          default:
+            throw new Error("Internal error");
+        }
       }
     },
     async followPlaylist(playlistId: string): Promise<void> {
@@ -290,7 +346,12 @@ export default defineStore("playlist", {
         );
         this.outdated = true;
       } catch (error: any) {
-        throw new Error(error.response.data.message);
+        switch (true) {
+          case error instanceof AxiosError:
+            throw new Error(error.response.data.message);
+          default:
+            throw new Error("Internal error");
+        }
       }
     },
   },
