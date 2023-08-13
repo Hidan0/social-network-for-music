@@ -10,6 +10,10 @@ export const isPlaylistAuthor = async (
     const { id } = req.params;
     const userId = req.identity._id;
 
+    if (!id) {
+      return res.status(400).json({ message: "Playlist id is required" });
+    }
+
     const playlist = await getPlaylistById(id);
     if (!playlist) {
       return res.status(404).json({ message: "Playlist not found" });
@@ -37,6 +41,10 @@ export const isPlaylistAuthorOrCollaborator = async (
   try {
     const { id } = req.params;
     const userId = req.identity._id;
+
+    if (!id) {
+      return res.status(400).json({ message: "Playlist id is required" });
+    }
 
     const playlist = await getPlaylistById(id);
     if (!playlist) {
@@ -68,6 +76,10 @@ export const isAccessible = async (
   try {
     const { id } = req.params;
     const userId = req.identity._id;
+
+    if (!id) {
+      return res.status(400).json({ message: "Playlist id is required" });
+    }
 
     const playlist = await getPlaylistById(id);
     if (!playlist) {

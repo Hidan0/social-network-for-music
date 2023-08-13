@@ -1,7 +1,6 @@
 import express from "express";
 import { isAuthenticated } from "../middlewares";
 import {
-  searchFromSpotify,
   getTracksFromIds,
   searchByTrack,
   searchArtist,
@@ -10,7 +9,6 @@ import {
 
 const spotifyRouter = express.Router();
 
-spotifyRouter.post("/spotify/search", isAuthenticated, searchFromSpotify);
 spotifyRouter.get("/spotify/search/track/:q", isAuthenticated, searchByTrack);
 spotifyRouter.get("/spotify/search/artist/:q", isAuthenticated, searchArtist);
 spotifyRouter.get("/spotify/tracks/:ids", isAuthenticated, getTracksFromIds);

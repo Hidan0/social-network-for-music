@@ -1,0 +1,1119 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Social Network for Music",
+    "description": "Social Network for Music API documentation"
+  },
+  "host": "localhost:8080",
+  "basePath": "/",
+  "tags": [
+    {
+      "name": "Users",
+      "description": "User endpoints"
+    },
+    {
+      "name": "Authentication",
+      "description": "User authentication endpoints"
+    },
+    {
+      "name": "Playlists",
+      "description": "Playlist endpoints"
+    },
+    {
+      "name": "Spotify",
+      "description": "Spotify endpoints wrapper"
+    }
+  ],
+  "schemes": ["http"],
+  "consumes": ["application/json"],
+  "produces": ["application/json"],
+  "paths": {
+    "/api/users": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Get all users (AUTH required)",
+        "description": "Endpoint to get all users, authentication is required",
+        "parameters": [
+          {
+            "name": "SNM-AUTH",
+            "in": "header",
+            "description": "User session token",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/users/{id}": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Get user (AUTH required)",
+        "description": "Endpoint to get an user, authentication is required",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "User ID",
+            "type": "string"
+          },
+          {
+            "name": "SNM-AUTH",
+            "description": "User session token",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Users"],
+        "summary": "Delete user (AUTH required)",
+        "description": "Endpoint to delete an user, authentication is required and that the request comes from the user",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "User ID",
+            "type": "string"
+          },
+          {
+            "name": "SNM-AUTH",
+            "description": "User session token",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "patch": {
+        "tags": ["Users"],
+        "summary": "Update user (AUTH required)",
+        "description": "Endpoint to update an user, authentication is required and that the request comes from the user",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "User ID",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "username": {
+                  "example": "any"
+                },
+                "name": {
+                  "example": "any"
+                },
+                "email": {
+                  "example": "any"
+                },
+                "password": {
+                  "example": "any"
+                }
+              }
+            }
+          },
+          {
+            "name": "SNM-AUTH",
+            "description": "User session token",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/users/{id}/genres/{genre}": {
+      "delete": {
+        "tags": ["Users"],
+        "summary": "Delete genre from user favorites (AUTH required)",
+        "description": "Endpoint to remove a music genre from user favorites, authentication is required and that the request comes from the user",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "User ID",
+            "type": "string"
+          },
+          {
+            "name": "genre",
+            "in": "path",
+            "required": true,
+            "description": "Genre name",
+            "type": "string"
+          },
+          {
+            "name": "SNM-AUTH",
+            "description": "User session token",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/users/{id}/genres": {
+      "put": {
+        "tags": ["Users"],
+        "summary": "Add genre to user favorites (AUTH required)",
+        "description": "Endpoint to add a music genre to user favorites, authentication is required and that the request comes from the user",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "User ID",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "genre": {
+                  "example": "any"
+                }
+              }
+            }
+          },
+          {
+            "name": "SNM-AUTH",
+            "description": "User session token",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/users/{id}/artists/{artist}": {
+      "delete": {
+        "tags": ["Users"],
+        "summary": "Delete artist from user favorites (AUTH required)",
+        "description": "Endpoint to remove an artist from user favorites, authentication is required and that the request comes from the user",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "User ID",
+            "type": "string"
+          },
+          {
+            "name": "artist",
+            "in": "path",
+            "required": true,
+            "description": "Artist name",
+            "type": "string"
+          },
+          {
+            "name": "SNM-AUTH",
+            "description": "User session token",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/users/{id}/artists": {
+      "put": {
+        "tags": ["Users"],
+        "summary": "Add an artist to user favorites (AUTH required)",
+        "description": "Endpoint to add an artist to user favorites, authentication is required and that the request comes from the user",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "User ID",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "artist": {
+                  "example": "any"
+                }
+              }
+            }
+          },
+          {
+            "name": "SNM-AUTH",
+            "description": "User session token",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/playlists/create": {
+      "post": {
+        "tags": ["Playlists"],
+        "summary": "Create a new playlist (AUTH required)",
+        "description": "Endpoint to create a new playlist, requires authentication",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "example": "any"
+                },
+                "description": {
+                  "example": "any"
+                },
+                "tags": {
+                  "example": "any"
+                },
+                "isPrivate": {
+                  "example": "any"
+                }
+              }
+            }
+          },
+          {
+            "name": "SNM-AUTH",
+            "description": "User session token",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/playlists/": {
+      "get": {
+        "tags": ["Playlists"],
+        "summary": "Get playlists in user library or public (AUTH required)",
+        "description": "Endpoint to get all playlists in user library or public, requires authentication",
+        "parameters": [
+          {
+            "name": "SNM-AUTH",
+            "description": "User session token",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/playlists/library": {
+      "get": {
+        "tags": ["Playlists"],
+        "summary": "Get playlists in user library (AUTH required)",
+        "description": "Endpoint to get all playlists in user library, requires authentication",
+        "parameters": [
+          {
+            "name": "SNM-AUTH",
+            "description": "User session token",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/playlists/public": {
+      "get": {
+        "tags": ["Playlists"],
+        "summary": "Get public playlists",
+        "description": "Endpoint to get all public playlists",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/playlists/{id}/collaborator/{collId}": {
+      "put": {
+        "tags": ["Playlists"],
+        "summary": "Add collaborator to playlist (AUTH required)",
+        "description": "Endpoint to add a collaborator to a playlist, requires authentication and that the user is the author of the playlist",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "Playlist ID"
+          },
+          {
+            "name": "collId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "Collaborator ID"
+          },
+          {
+            "name": "SNM-AUTH",
+            "description": "User session token",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Playlists"],
+        "summary": "Remove collaborator from playlist (AUTH required)",
+        "description": "Endpoint to remove a collaborator from a playlist, requires authentication and that the user is the author of the playlist",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "Playlist ID"
+          },
+          {
+            "name": "collId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "Collaborator ID"
+          },
+          {
+            "name": "SNM-AUTH",
+            "description": "User session token",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/playlists/{id}": {
+      "delete": {
+        "tags": ["Playlists"],
+        "summary": "Delete a playlist (AUTH required)",
+        "description": "Endpoint to delete a playlist, requires authentication and that the user is the author of the playlist",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "Playlist ID"
+          },
+          {
+            "name": "SNM-AUTH",
+            "description": "User session token",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "patch": {
+        "tags": ["Playlists"],
+        "summary": "Edit a playlist (AUTH required)",
+        "description": "Endpoint to edit a playlist, requires authentication and that the user is the author of the playlist",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "Playlist ID"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "example": "any"
+                },
+                "description": {
+                  "example": "any"
+                },
+                "tags": {
+                  "example": "any"
+                },
+                "isPrivate": {
+                  "example": "any"
+                }
+              }
+            }
+          },
+          {
+            "name": "SNM-AUTH",
+            "description": "User session token",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "get": {
+        "tags": ["Playlists"],
+        "summary": "Get playlist (AUTH required)",
+        "description": "Endpoint to get a playlist, requires authentication and that the user is the author of the playlist or a collaborator",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "Playlist ID"
+          },
+          {
+            "name": "SNM-AUTH",
+            "description": "User session token",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/playlists/{id}/tracks": {
+      "post": {
+        "tags": ["Playlists"],
+        "summary": "Add track to playlist (AUTH required)",
+        "description": "Endpoint to add a track to a playlist, requires authentication and that the user is the author of the playlist or a collaborator",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "Playlist ID"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "track": {
+                  "example": "any"
+                }
+              }
+            }
+          },
+          {
+            "name": "SNM-AUTH",
+            "description": "User session token",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "get": {
+        "tags": ["Playlists"],
+        "summary": "Get tracks from playlist (AUTH required)",
+        "description": "Endpoint to get all tracks from a playlist, requires authentication",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "Playlist ID"
+          },
+          {
+            "name": "SNM-AUTH",
+            "description": "User session token",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/playlists/{id}/tracks/{trackId}": {
+      "delete": {
+        "tags": ["Playlists"],
+        "summary": "Delete track from playlist (AUTH required)",
+        "description": "Endpoint to delete a track from a playlist, requires authentication and that the user is the author of the playlist or a collaborator",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "Playlist ID"
+          },
+          {
+            "name": "trackId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "Track ID"
+          },
+          {
+            "name": "SNM-AUTH",
+            "description": "User session token",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/spotify/search/track/{q}": {
+      "get": {
+        "tags": ["Spotify"],
+        "summary": "Search track by given query (AUTH required)",
+        "description": "Endpoint to search tracks by query, authentication is required",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "Query to search"
+          },
+          {
+            "name": "SNM-AUTH",
+            "description": "User session token",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/spotify/search/artist/{q}": {
+      "get": {
+        "tags": ["Spotify"],
+        "summary": "Search artist by given query (AUTH required)",
+        "description": "Endpoint to search artists by query, authentication is required",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "Query to search"
+          },
+          {
+            "name": "SNM-AUTH",
+            "description": "User session token",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/spotify/tracks/{ids}": {
+      "get": {
+        "tags": ["Spotify"],
+        "summary": "Get tracks (AUTH required)",
+        "description": "Endpoint to get track by comma separated track ids, authentication is required",
+        "parameters": [
+          {
+            "name": "ids",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "Comma separated ids"
+          },
+          {
+            "name": "SNM-AUTH",
+            "description": "User session token",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/spotify/genres": {
+      "get": {
+        "tags": ["Spotify"],
+        "summary": "Get music genres (AUTH required)",
+        "description": "Endpoint to get all music genres, authentication is required",
+        "parameters": [
+          {
+            "name": "SNM-AUTH",
+            "description": "User session token",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/auth/register": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Register a user",
+        "description": "Endpoint to register a user",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "example": "any"
+                },
+                "password": {
+                  "example": "any"
+                },
+                "username": {
+                  "example": "any"
+                },
+                "name": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Login a user",
+        "description": "Endpoint to login a user",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "example": "any"
+                },
+                "username": {
+                  "example": "any"
+                },
+                "password": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/auth/verify": {
+      "get": {
+        "tags": ["Authentication"],
+        "summary": "Check if session token is valid",
+        "description": "Endpoint to check if session token is valid",
+        "parameters": [
+          {
+            "name": "SNM-AUTH",
+            "in": "header",
+            "type": "string",
+            "description": "User session token"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    }
+  }
+}
