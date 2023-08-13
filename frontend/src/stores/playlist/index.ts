@@ -391,5 +391,32 @@ export default defineStore("playlist", {
         }
       }
     },
+    async deletePlaylist(playlistId: string): Promise<void> {
+      if (!this._hasLoaded()) {
+        throw new Error(
+          "Unable to delete this playlist because it was not loaded correctly"
+        );
+      }
+
+      if (!this._isValidId(playlistId)) {
+        throw new Error("Invalid playlist id");
+      }
+
+      try {
+        await axios.delete(`/playlists/${playlistId}`, {
+          headers: {
+            "SNM-AUTH": $user.token,
+          },
+        });
+        this.outdated = true;
+      } catch (error: any) {
+        switch (true) {
+          case error instanceof AxiosError:
+            throw new Error(error.response.data.message);
+          default:
+            throw new Error("Internal error");
+        }
+      }
+    },
   },
 });

@@ -35,6 +35,7 @@ const loadPublicPlaylists = async () => {
         data.map(async (playlist: PlaylistData) => {
           const authorName = await $user.getUsernameFromUserId(playlist.author);
           playlist.author = authorName;
+          if (authorName === $user.username!) playlist.author += " 🫵";
           return playlist;
         })
       );

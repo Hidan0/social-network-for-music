@@ -17,6 +17,9 @@ const collabManagerId = "manageCollabs";
 import PlaylistEditor from "../components/PlaylistEditor.vue";
 const editPlaylistId = "editPlaylist";
 
+import ConfirmDeletePlaylist from "../components/ConfirmDeletePlaylist.vue";
+const confirmDeleteId = "confirmDelete";
+
 import { useVuert } from "@byloth/vuert";
 
 const vuert = useVuert();
@@ -126,6 +129,10 @@ fetchData();
           :playlist-id="playlistId"
           @updated="fetchData"
         />
+        <ConfirmDeletePlaylist
+          :id="confirmDeleteId"
+          :playlist-id="playlistId"
+        />
         <div class="row mt-4">
           <div class="col">
             <p>
@@ -160,6 +167,15 @@ fetchData();
               :data-bs-target="'#' + editPlaylistId"
             >
               <span class="fa-regular fa-pen-to-square"></span>
+            </button>
+          </div>
+          <div class="col-1" v-if="userIsOwner">
+            <button
+              class="btn rounded-5"
+              data-bs-toggle="modal"
+              :data-bs-target="'#' + confirmDeleteId"
+            >
+              <span class="fa-regular fa-trash text-danger"></span>
             </button>
           </div>
         </div>

@@ -269,7 +269,6 @@ export default defineStore("user", {
           },
         });
 
-        console.log(res);
         this._setToken(res.data.auth.sessionToken);
         this._setInfo({
           id: res.data._id,
