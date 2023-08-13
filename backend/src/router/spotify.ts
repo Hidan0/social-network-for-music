@@ -8,10 +8,12 @@ import {
   getGenres,
 } from "../controllers/spotify";
 
-export default (router: express.Router) => {
-  router.post("/spotify/search", isAuthenticated, searchFromSpotify);
-  router.get("/spotify/search/track/:q", isAuthenticated, searchByTrack);
-  router.get("/spotify/search/artist/:q", isAuthenticated, searchArtist);
-  router.get("/spotify/tracks/:ids", isAuthenticated, getTracksFromIds);
-  router.get("/spotify/genres", isAuthenticated, getGenres);
-};
+const spotifyRouter = express.Router();
+
+spotifyRouter.post("/spotify/search", isAuthenticated, searchFromSpotify);
+spotifyRouter.get("/spotify/search/track/:q", isAuthenticated, searchByTrack);
+spotifyRouter.get("/spotify/search/artist/:q", isAuthenticated, searchArtist);
+spotifyRouter.get("/spotify/tracks/:ids", isAuthenticated, getTracksFromIds);
+spotifyRouter.get("/spotify/genres", isAuthenticated, getGenres);
+
+export default spotifyRouter;

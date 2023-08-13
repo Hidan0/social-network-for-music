@@ -20,50 +20,61 @@ import {
   getAvailablePlaylists,
 } from "../controllers/playlists";
 
-export default (router: express.Router) => {
-  router.post("/playlists/create", isAuthenticated, createNewPlaylist);
-  router.get("/playlists/", isAuthenticated, getAvailablePlaylists);
-  router.get("/playlists/library", isAuthenticated, getLibraryPlaylists);
-  router.get("/playlists/public", getPubPlaylists);
+const playlistRouter = express.Router();
 
-  router.put(
-    "/playlists/:id/collaborator/:collId",
-    isAuthenticated,
-    addCollaborator
-  );
-  router.delete(
-    "/playlists/:id/collaborator/:collId",
-    isAuthenticated,
-    isPlaylistAuthorOrCollaborator,
-    removeCollaborator
-  );
+playlistRouter.post("/playlists/create", isAuthenticated, createNewPlaylist);
+playlistRouter.get("/playlists/", isAuthenticated, getAvailablePlaylists);
+playlistRouter.get("/playlists/library", isAuthenticated, getLibraryPlaylists);
+playlistRouter.get("/playlists/public", getPubPlaylists);
 
-  router.delete(
-    "/playlists/:id",
-    isAuthenticated,
-    isPlaylistAuthor,
-    deletePlaylist
-  );
-  router.patch(
-    "/playlists/:id",
-    isAuthenticated,
-    isPlaylistAuthor,
-    editPlaylist
-  );
+playlistRouter.put(
+  "/playlists/:id/collaborator/:collId",
+  isAuthenticated,
+  addCollaborator
+);
+playlistRouter.delete(
+  "/playlists/:id/collaborator/:collId",
+  isAuthenticated,
+  isPlaylistAuthorOrCollaborator,
+  removeCollaborator
+);
 
-  router.post(
-    "/playlists/:id/tracks",
-    isAuthenticated,
-    isPlaylistAuthorOrCollaborator,
-    addTrackToPlaylist
-  );
-  router.get("/playlists/:id/tracks", isAuthenticated, getTracksFromPlaylist);
-  router.delete(
-    "/playlists/:id/tracks/:trackId",
-    isAuthenticated,
-    isPlaylistAuthorOrCollaborator,
-    deleteTrackFromPlaylist
-  );
+playlistRouter.delete(
+  "/playlists/:id",
+  isAuthenticated,
+  isPlaylistAuthor,
+  deletePlaylist
+);
+playlistRouter.patch(
+  "/playlists/:id",
+  isAuthenticated,
+  isPlaylistAuthor,
+  editPlaylist
+);
 
-  router.get("/playlists/:id", isAuthenticated, isAccessible, getPlaylist);
-};
+playlistRouter.post(
+  "/playlists/:id/tracks",
+  isAuthenticated,
+  isPlaylistAuthorOrCollaborator,
+  addTrackToPlaylist
+);
+playlistRouter.get(
+  "/playlists/:id/tracks",
+  isAuthenticated,
+  getTracksFromPlaylist
+);
+playlistRouter.delete(
+  "/playlists/:id/tracks/:trackId",
+  isAuthenticated,
+  isPlaylistAuthorOrCollaborator,
+  deleteTrackFromPlaylist
+);
+
+playlistRouter.get(
+  "/playlists/:id",
+  isAuthenticated,
+  isAccessible,
+  getPlaylist
+);
+
+export default playlistRouter;

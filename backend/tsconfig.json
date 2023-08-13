@@ -9,6 +9,10 @@
     "outDir": "dist",
     "sourceMap": true,
     "noImplicitAny": true,
+    "resolvePackageJsonImports": true,
+    "resolvePackageJsonExports": true,
+    "resolveJsonModule": true,
+    "allowImportingTsExtensions": true,
     "strict": true
   },
   "include": ["src/**/*"]
