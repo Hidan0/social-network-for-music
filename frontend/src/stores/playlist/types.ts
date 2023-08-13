@@ -35,3 +35,5 @@ export interface TrackData {
   duration: number;
   imgSrc: string;
 }
+
+export type TrackCache = Record<string, TrackData>;

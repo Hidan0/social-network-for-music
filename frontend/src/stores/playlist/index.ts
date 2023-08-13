@@ -5,9 +5,11 @@ import {
   PlaylistData,
   PlaylistState,
   CreatePlaylistData,
+  TrackCache,
 } from "./types";
 import useUserStore from "../user";
 import { AxiosError } from "axios";
+import store from "store2";
 
 const $user = useUserStore();
 
@@ -140,25 +142,58 @@ export default defineStore("playlist", {
         }
       }
     },
+    _checkCachedTracks(trackIds: { ids: string[] }): TrackData[] {
+      let tracks: TrackData[] = [];
+
+      if (store.has("tracks")) {
+        const cachedTracks = store.get("tracks") as TrackCache;
+
+        if (Object.keys(cachedTracks).length === 0) {
+          return [];
+        }
+
+        for (let i = 0; i < trackIds.ids.length; i++) {
+          const track = cachedTracks[trackIds.ids[i]];
+          if (track !== undefined) {
+            tracks.push(track);
+            trackIds.ids.splice(i, 1);
+          }
+        }
+      }
+      return tracks;
+    },
+    _cacheTrack(track: TrackData): void {
+      if (store.has("tracks")) {
+        const cachedTracks = store.get("tracks") as TrackCache;
+        cachedTracks[track.id] = track;
+        store.set("tracks", cachedTracks);
+      } else {
+        const cachedTracks = {} as TrackCache;
+        cachedTracks[track.id] = track;
+        store.set("tracks", cachedTracks);
+      }
+    },
     async getTracks(trackIds: string[]): Promise<TrackData[]> {
       try {
+        let tracks: TrackData[] = this._checkCachedTracks({ ids: trackIds });
+
         const res = await axios.get(`/spotify/tracks/${trackIds.join(",")}`, {
           headers: {
             "SNM-AUTH": $user.token,
           },
         });
 
-        let tracks: TrackData[] = [];
-
         res.data.tracks.forEach((track: any) => {
-          tracks.push({
+          const t: TrackData = {
             id: track.id,
             name: track.name,
             artist: track.artists[0].name,
             album: track.album.name,
             duration: track.duration_ms,
             imgSrc: track.album.images[2].url,
-          });
+          };
+          this._cacheTrack(t);
+          tracks.push(t);
         });
 
         return tracks;
