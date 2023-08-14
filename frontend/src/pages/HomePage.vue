@@ -102,7 +102,11 @@ const fetchRecommendations = async () => {
   isFetching.value = false;
 };
 
-fetchRecommendations();
+const canFetchRecommendations = ref(false);
+if ($user.favoriteGenres !== undefined && $user.favoriteGenres.length > 0) {
+  canFetchRecommendations.value = true;
+  fetchRecommendations();
+}
 </script>
 
 <template>
@@ -121,14 +125,18 @@ fetchRecommendations();
     <div class="row my-1">
       <div class="col">
         <h4 class="text-spt-primary my-3 text-start">Recommendations</h4>
-        <p class="text-start">Here some songs that you might like</p>
-        <SuspenseLayout :loading="isFetching" :failed="hasFailed">
+        <SuspenseLayout
+          :loading="isFetching"
+          :failed="hasFailed"
+          v-if="canFetchRecommendations"
+        >
           <template #loader>
             <div class="row justify-content-center mt-3">
               <Spinner />
             </div>
           </template>
           <template #default>
+            <p class="text-start">Here some songs that you might like</p>
             <div class="row" v-if="!emptyTrackResults">
               <div class="col mt-3">
                 <SearchTrackRow
@@ -157,6 +165,14 @@ fetchRecommendations();
             </div>
           </template>
         </SuspenseLayout>
+        <div v-else class="row">
+          <div class="col text-warning">
+            <p>
+              <i class="fa-regular fa-face-sad-tear"></i> We can not recommend
+              anything if you don't set your favorites genres!
+            </p>
+          </div>
+        </div>
       </div>
       <div class="row my-1">
         <div class="col">
