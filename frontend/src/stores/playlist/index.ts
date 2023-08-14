@@ -418,5 +418,40 @@ export default defineStore("playlist", {
         }
       }
     },
+    async getTracksFromRecommendations(): Promise<TrackData[]> {
+      try {
+        const res = await axios.get(
+          `/spotify/recommendations/${$user.favoriteGenres!.join(",")}`,
+          {
+            headers: {
+              "SNM-AUTH": $user.token,
+            },
+          }
+        );
+
+        let tracks: TrackData[] = [];
+        res.data.tracks.forEach((track: any) => {
+          const t: TrackData = {
+            id: track.id,
+            name: track.name,
+            artist: track.artists[0].name,
+            album: track.album.name,
+            duration: track.duration_ms,
+            imgSrc: track.album.images[2].url,
+          };
+          this._cacheTrack(t);
+          tracks.push(t);
+        });
+
+        return tracks;
+      } catch (error: any) {
+        switch (true) {
+          case error instanceof AxiosError:
+            throw new Error(error.response.data.message);
+          default:
+            throw new Error("Internal error");
+        }
+      }
+    },
   },
 });

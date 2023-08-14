@@ -111,3 +111,31 @@ export const getGenres = async (
     return res.status(500).json({ message: error.message });
   }
 };
+
+export const getRecommendation = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  try {
+    const { genres } = req.params;
+
+    if (!genres) {
+      return res.status(400).json({ message: "Missing genres" });
+    }
+
+    const token = await getSpotifyToken();
+    const sptRes = await instance.get(
+      `/recommendations?seed_genres=${genres}&limit=10`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
+        },
+      }
+    );
+    return res.status(200).json(sptRes.data).end();
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({ message: error.message });
+  }
+};
