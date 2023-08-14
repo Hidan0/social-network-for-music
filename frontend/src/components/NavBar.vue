@@ -68,7 +68,7 @@ const logout = () => {
                 <i class="fa-solid fa-user"></i> User
               </RouterLink>
             </li>
-            <li class="nav-item">
+            <li class="nav-item" style="cursor: pointer">
               <a class="nav-link text-danger" @click="logout">
                 <i class="fa-solid fa-right-from-bracket"></i> Logout
               </a>
