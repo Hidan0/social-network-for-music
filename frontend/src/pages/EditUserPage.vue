@@ -401,7 +401,7 @@ const updateUserInfo = async () => {
       </div>
     </div>
     <div class="row justify-content-center">
-      <div class="col">
+      <div class="col mb-4">
         <h4 class="text-spt-primary my-3 text-start">User info</h4>
 
         <div class="col">
