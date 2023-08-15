@@ -1007,6 +1007,42 @@
         }
       }
     },
+    "/api/spotify/recommendations/{genres}": {
+      "get": {
+        "tags": ["Spotify"],
+        "summary": "Get recommended tracks (AUTH required)",
+        "description": "Endpoint to get recommended tracks from comma separated genres, authentication is required",
+        "parameters": [
+          {
+            "name": "genres",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "Comma separated genres"
+          },
+          {
+            "name": "SNM-AUTH",
+            "description": "User session token",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/api/auth/register": {
       "post": {
         "tags": ["Authentication"],
