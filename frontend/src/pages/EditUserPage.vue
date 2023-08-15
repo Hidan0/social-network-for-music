@@ -8,6 +8,7 @@ import useUserState from "../stores/user";
 import { useVuert } from "@byloth/vuert";
 import { Ref } from "vue";
 import { registerSchema, updateOnlyInfoSchema } from "../utils/validator";
+import router from "../router";
 
 const vuert = useVuert();
 const $user = useUserState();
@@ -250,6 +251,23 @@ const updateUserInfo = async () => {
 
   isSubmitting.value = false;
 };
+
+const deleteAccount = async () => {
+  try {
+    await $user.deleteUser();
+    setTimeout(() => {
+      router.push({ name: "register" });
+    }, 900);
+  } catch (error: any) {
+    vuert.emit({
+      message: error.message,
+      timeout: 2500,
+      icon: "fa-circle-exclamation",
+      type: "error",
+      dismissible: true,
+    });
+  }
+};
 </script>
 
 <template>
@@ -469,6 +487,16 @@ const updateUserInfo = async () => {
               </button>
             </div>
           </form>
+        </div>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col mb-4">
+        <h4 class="text-danger my-3 text-start">Danger zone</h4>
+        <div class="d-grid">
+          <button type="button" class="btn btn-danger" @click="deleteAccount">
+            Delete account (IRREVERSIBLE)
+          </button>
         </div>
       </div>
     </div>

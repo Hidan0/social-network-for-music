@@ -287,5 +287,21 @@ export default defineStore("user", {
         }
       }
     },
+    async deleteUser(): Promise<void> {
+      try {
+        await axios.delete(`/users/${this.id}`, {
+          headers: {
+            "SNM-AUTH": this.token,
+          },
+        });
+      } catch (error: any) {
+        switch (true) {
+          case error instanceof AxiosError:
+            throw new Error(error.response.data.message);
+          default:
+            throw new Error("Internal error");
+        }
+      }
+    },
   },
 });

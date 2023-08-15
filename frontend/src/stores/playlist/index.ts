@@ -177,24 +177,26 @@ export default defineStore("playlist", {
       try {
         let tracks: TrackData[] = this._checkCachedTracks({ ids: trackIds });
 
-        const res = await axios.get(`/spotify/tracks/${trackIds.join(",")}`, {
-          headers: {
-            "SNM-AUTH": $user.token,
-          },
-        });
+        if (trackIds.length > 0) {
+          const res = await axios.get(`/spotify/tracks/${trackIds.join(",")}`, {
+            headers: {
+              "SNM-AUTH": $user.token,
+            },
+          });
 
-        res.data.tracks.forEach((track: any) => {
-          const t: TrackData = {
-            id: track.id,
-            name: track.name,
-            artist: track.artists[0].name,
-            album: track.album.name,
-            duration: track.duration_ms,
-            imgSrc: track.album.images[2].url,
-          };
-          this._cacheTrack(t);
-          tracks.push(t);
-        });
+          res.data.tracks.forEach((track: any) => {
+            const t: TrackData = {
+              id: track.id,
+              name: track.name,
+              artist: track.artists[0].name,
+              album: track.album.name,
+              duration: track.duration_ms,
+              imgSrc: track.album.images[2].url,
+            };
+            this._cacheTrack(t);
+            tracks.push(t);
+          });
+        }
 
         return tracks;
       } catch (error: any) {
