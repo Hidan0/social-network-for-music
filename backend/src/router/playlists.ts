@@ -18,6 +18,7 @@ import {
   deleteTrackFromPlaylist,
   getPlaylist,
   getAvailablePlaylists,
+  searchPlaylists,
 } from "../controllers/playlists";
 
 const playlistRouter = express.Router();
@@ -26,6 +27,7 @@ playlistRouter.post("/playlists/create", isAuthenticated, createNewPlaylist);
 playlistRouter.get("/playlists/", isAuthenticated, getAvailablePlaylists);
 playlistRouter.get("/playlists/library", isAuthenticated, getLibraryPlaylists);
 playlistRouter.get("/playlists/public", getPubPlaylists);
+playlistRouter.get("/playlists/search", isAuthenticated, searchPlaylists);
 
 playlistRouter.put(
   "/playlists/:id/collaborator/:collId",

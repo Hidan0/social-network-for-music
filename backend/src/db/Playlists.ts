@@ -101,3 +101,23 @@ export const pushTrackToPlaylist = (id: string, track: string) =>
   PlaylistModel.findByIdAndUpdate(id, { $addToSet: { tracks: track } });
 export const removeTrackFromPlaylist = (id: string, track: string) =>
   PlaylistModel.findByIdAndUpdate(id, { $pull: { tracks: track } });
+
+export const findPlaylistsByTitle = (title: string) => {
+  const searchKeywords = title.split(" ");
+  const regexPatterns = searchKeywords.map(
+    (keyword) => new RegExp(keyword, "i")
+  );
+  return PlaylistModel.find({
+    $or: regexPatterns.map((pattern) => ({
+      title: { $regex: pattern },
+      isPrivate: false,
+    })),
+  });
+};
+export const findPlaylistsByTags = (tags: string[]) =>
+  PlaylistModel.find({ tags: { $elemMatch: { $in: tags } }, isPrivate: false });
+export const findPlaylistsByTrackIds = (trackIds: string[]) =>
+  PlaylistModel.find({
+    tracks: { $elemMatch: { $in: trackIds } },
+    isPrivate: false,
+  });

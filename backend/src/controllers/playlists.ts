@@ -12,6 +12,9 @@ import {
   pushTrackToPlaylist,
   removeTrackFromPlaylist,
   getPlaylistsInLibraryOrPublic,
+  findPlaylistsByTitle,
+  findPlaylistsByTags,
+  findPlaylistsByTrackIds,
 } from "../db/Playlists";
 import { getUserById } from "../db/Users";
 
@@ -307,6 +310,53 @@ export const getPlaylist = async (
 ) => {
   try {
     return res.status(200).json(req.playlist).end();
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+const mergePlaylists = (playlist: any[], other: any[]) => {
+  for (const el of other) {
+    if (!playlist.find((p) => p._id.toString() === el._id.toString())) {
+      playlist.push(el);
+    }
+  }
+};
+
+export const searchPlaylists = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  try {
+    const { title, tags, tracks } = req.query;
+
+    if (!title && !tags && !tracks) {
+      return res.status(400).json({ message: "No search query provided" });
+    }
+
+    var searchedByTitle;
+    if (title) searchedByTitle = await findPlaylistsByTitle(title as string);
+
+    var searchedByTags;
+    if (tags)
+      searchedByTags = await findPlaylistsByTags((tags as string).split(","));
+
+    var searchedByTracks;
+    if (tracks)
+      searchedByTracks = await findPlaylistsByTrackIds(
+        (tracks as string).split(",")
+      );
+
+    var searchedPlaylists: any[] = [];
+
+    if (searchedByTitle) mergePlaylists(searchedPlaylists, searchedByTitle);
+
+    if (searchedByTags) mergePlaylists(searchedPlaylists, searchedByTags);
+
+    if (searchedByTracks) mergePlaylists(searchedPlaylists, searchedByTracks);
+
+    return res.status(200).json(searchedPlaylists).end();
   } catch (error: any) {
     console.log(error);
     return res.status(500).json({ message: error.message });

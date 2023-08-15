@@ -455,5 +455,34 @@ export default defineStore("playlist", {
         }
       }
     },
+    async searchPlaylists(
+      title: string | undefined,
+      tags: string[] | undefined,
+      tracks: string[] | undefined
+    ): Promise<PlaylistData[]> {
+      try {
+        var searchQuery = `/playlists/search?`;
+
+        if (title !== undefined)
+          searchQuery += `title=${encodeURIComponent(title)}`;
+        if (tags !== undefined) searchQuery += `&tags=${tags.join(",")}`;
+        if (tracks !== undefined) searchQuery += `&tracks=${tracks.join(",")}`;
+
+        const res = await axios.get(searchQuery, {
+          headers: {
+            "SNM-AUTH": $user.token,
+          },
+        });
+
+        return res.data;
+      } catch (error: any) {
+        switch (true) {
+          case error instanceof AxiosError:
+            throw new Error(error.response.data.message);
+          default:
+            throw new Error("Internal error");
+        }
+      }
+    },
   },
 });

@@ -19,11 +19,12 @@ const $user = useUserStore();
 
 const searchResults: Ref<TrackData[]> = ref([]);
 const searchResultsPlaylist: Ref<PlaylistData[]> = ref([]);
+const searchResultsPlaylistByTracks: Ref<PlaylistData[]> = ref([]);
 
 const userPlaylists: Ref<{ id: string; title: string }[]> = ref([]);
 
 const hasNotSearchedYet = ref(true);
-const isSearchingTracks = ref(true);
+const showTracksResults = ref(true);
 
 const searchQuery = ref("");
 const artistQuery = ref("");
@@ -35,6 +36,7 @@ const searchPlaylistQuery = ref("");
 const emptyTrackResults = ref(true);
 const isFetching = ref(true);
 const hasFailed = ref(false);
+
 const onSearchTrack = async () => {
   try {
     if (searchQuery.value === "") return;
@@ -49,11 +51,38 @@ const onSearchTrack = async () => {
       yearQuery.value
     );
 
-    if (tracks.length === 0) emptyTrackResults.value = true;
-    else emptyTrackResults.value = false;
+    if (tracks.length === 0) {
+      emptyTrackResults.value = true;
+      emptyPlaylistsResultsByTracks.value = true;
+    } else {
+      emptyTrackResults.value = false;
+
+      const playlistData = await $playlist.searchPlaylists(
+        undefined,
+        undefined,
+        tracks.map((track) => track.id)
+      );
+
+      if (playlistData.length > 0) {
+        emptyPlaylistsResultsByTracks.value = false;
+
+        await Promise.all(
+          playlistData.map(async (playlist: PlaylistData) => {
+            const authorName = await $user.getUsernameFromUserId(
+              playlist.author
+            );
+            playlist.author = authorName;
+            return playlist;
+          })
+        );
+
+        searchResultsPlaylistByTracks.value = playlistData;
+      } else {
+        emptyPlaylistsResultsByTracks.value = true;
+      }
+    }
 
     searchResults.value = tracks;
-
     hasNotSearchedYet.value = false;
 
     isFetching.value = false;
@@ -73,6 +102,7 @@ const onSearchTrack = async () => {
 };
 
 const emptyPlaylistsResults = ref(true);
+const emptyPlaylistsResultsByTracks = ref(true);
 const onSearchPlaylist = async () => {
   try {
     if (searchPlaylistQuery.value === "") return;
@@ -81,26 +111,14 @@ const onSearchPlaylist = async () => {
     hasFailed.value = false;
     emptyPlaylistsResults.value = true;
 
-    const playlists = await $playlist.getAvailablePlaylists();
     hasNotSearchedYet.value = false;
 
-    const keyWords = searchPlaylistQuery.value.toLowerCase().split(" ");
-
-    const titles = playlists.filter((playlist: PlaylistData) => {
-      if (
-        keyWords.find((word: string) =>
-          playlist.title.toLowerCase().includes(word)
-        )
-      )
-        return true;
-      else return false;
-    });
-
-    const tags = playlists.filter((playlist: PlaylistData) =>
-      playlist.tags.find((tag: string) => keyWords.includes(tag.toLowerCase()))
+    const tags = searchPlaylistQuery.value.toLowerCase().split(" ");
+    const data = await $playlist.searchPlaylists(
+      searchPlaylistQuery.value,
+      tags,
+      undefined
     );
-
-    const data = [...tags, ...titles];
 
     if (data.length > 0) {
       emptyPlaylistsResults.value = false;
@@ -165,23 +183,23 @@ fetchUserPlaylists();
         <span
           class="badge me-1 curs"
           :class="
-            isSearchingTracks ? 'text-bg-spt-primary' : 'text-bg-secondary'
+            showTracksResults ? 'text-bg-spt-primary' : 'text-bg-secondary'
           "
-          @click="isSearchingTracks = true"
+          @click="showTracksResults = true"
           >Tracks</span
         >
         <span
           class="badge curs"
           :class="
-            !isSearchingTracks ? 'text-bg-spt-primary' : 'text-bg-secondary'
+            !showTracksResults ? 'text-bg-spt-primary' : 'text-bg-secondary'
           "
-          @click="isSearchingTracks = false"
+          @click="showTracksResults = false"
           >Playlists</span
         >
       </div>
     </div>
     <div class="row">
-      <div class="col" v-if="isSearchingTracks">
+      <div class="col" v-if="showTracksResults">
         <form novalidate @submit.prevent="onSearchTrack">
           <div class="row">
             <div class="col">
@@ -251,7 +269,7 @@ fetchUserPlaylists();
             </div>
           </template>
           <template #default>
-            <div v-if="isSearchingTracks">
+            <div v-if="showTracksResults">
               <div class="row" v-if="!emptyTrackResults">
                 <div class="col mt-3">
                   <SearchTrackRow
@@ -262,26 +280,52 @@ fetchUserPlaylists();
                 </div>
               </div>
               <div class="row" v-else>
-                <h5 class="text-secondary mt-3">No results found</h5>
+                <h5 class="text-secondary mt-3">No tracks found</h5>
               </div>
             </div>
-            <div v-else-if="!isSearchingTracks">
-              <div class="row" v-if="!emptyPlaylistsResults">
-                <div
-                  class="col-auto mt-3"
-                  v-for="playlist in searchResultsPlaylist"
-                >
-                  <PlaylistCard
-                    :title="playlist.title"
-                    :author="playlist.author"
-                    :description="playlist.description"
-                    :tags="playlist.tags"
-                    :id="playlist._id"
-                  />
+            <div class="my-4">
+              <h5 v-if="showTracksResults" class="text-start">
+                Here are some
+                <span class="text-spt-primary">playlists</span> that might
+                contain what you're looking for...
+              </h5>
+              <div v-if="showTracksResults">
+                <div class="row" v-if="!emptyPlaylistsResultsByTracks">
+                  <div
+                    class="col-auto mt-3"
+                    v-for="playlist in searchResultsPlaylistByTracks"
+                  >
+                    <PlaylistCard
+                      :title="playlist.title"
+                      :author="playlist.author"
+                      :description="playlist.description"
+                      :tags="playlist.tags"
+                      :id="playlist._id"
+                    />
+                  </div>
+                </div>
+                <div class="row" v-else>
+                  <h5 class="text-secondary mt-3">No playlists found</h5>
                 </div>
               </div>
-              <div class="row" v-else>
-                <h5 class="text-secondary mt-3">No results found</h5>
+              <div v-else>
+                <div class="row" v-if="!emptyPlaylistsResults">
+                  <div
+                    class="col-auto mt-3"
+                    v-for="playlist in searchResultsPlaylist"
+                  >
+                    <PlaylistCard
+                      :title="playlist.title"
+                      :author="playlist.author"
+                      :description="playlist.description"
+                      :tags="playlist.tags"
+                      :id="playlist._id"
+                    />
+                  </div>
+                </div>
+                <div class="row" v-else>
+                  <h5 class="text-secondary mt-3">No playlists found</h5>
+                </div>
               </div>
             </div>
           </template>
