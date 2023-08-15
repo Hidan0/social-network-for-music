@@ -28,7 +28,7 @@ const loadPublicPlaylists = async () => {
   try {
     let data = await $playlist.getLibraryPlaylists();
 
-    if (data) {
+    if (data && data.length > 0) {
       empty.value = false;
 
       await Promise.all(
@@ -102,8 +102,10 @@ loadPublicPlaylists();
             />
           </div>
         </div>
-        <div class="row" v-if="empty">
-          <h5>Your library looks so empty... Create one yourself</h5>
+        <div class="row" v-else>
+          <div class="col-auto">
+            <h5>Your library looks so empty... Create one yourself</h5>
+          </div>
         </div>
       </template>
       <template #error>
