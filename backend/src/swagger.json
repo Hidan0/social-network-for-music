@@ -99,7 +99,7 @@
       "delete": {
         "tags": ["Users"],
         "summary": "Delete user (AUTH required)",
-        "description": "Endpoint to delete an user, authentication is required and that the request comes from the user",
+        "description": "Endpoint to delete the given user and his playlists, authentication is required and that the request comes from the user",
         "parameters": [
           {
             "name": "id",
