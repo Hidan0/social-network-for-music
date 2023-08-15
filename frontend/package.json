@@ -8,6 +8,7 @@
     "build": "vue-tsc && vite build",
     "preview": "vite preview"
   },
+  "license": "CC-BY-NC-SA-4.0",
   "dependencies": {
     "@byloth/vuert": "^1.0.4",
     "@fortawesome/fontawesome-free": "^6.4.0",

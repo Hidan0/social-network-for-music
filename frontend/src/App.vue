@@ -54,7 +54,7 @@ const showBar = computed(() => {
               class="text-spt-primary"
               target="_blank"
             >
-              (CC-BY 4.0)</a
+              (CC-BY-NC-SA 4.0)</a
             >
           </div>
         </div>
