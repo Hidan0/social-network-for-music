@@ -1,6 +1,7 @@
 import express from "express";
 import { getSpotifyToken } from "../utils/spotify";
 import axios from "axios";
+import { getRandomElements } from "../utils";
 
 const SPOTY_API = "https://api.spotify.com/v1";
 
@@ -123,9 +124,12 @@ export const getRecommendation = async (
       return res.status(400).json({ message: "Missing genres" });
     }
 
+    var genresArr = genres.split(",");
+    if (genresArr.length > 5) genresArr = getRandomElements(genresArr, 5);
+
     const token = await getSpotifyToken();
     const sptRes = await instance.get(
-      `/recommendations?seed_genres=${genres}&limit=10`,
+      `/recommendations?seed_genres=${genresArr.join(",")}&limit=10`,
       {
         headers: {
           "Content-Type": "application/json",
