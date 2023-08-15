@@ -873,6 +873,59 @@
         }
       }
     },
+    "/api/playlists/search": {
+      "get": {
+        "tags": ["Playlists"],
+        "summary": "Search playlists (AUTH required)",
+        "description": "Endpoint to search public playlists given title, tags or tracks, authentication is required",
+        "parameters": [
+          {
+            "name": "title",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Playlist title"
+          },
+          {
+            "name": "tags",
+            "in": "query",
+            "required": false,
+            "type": "string[]",
+            "description": "Comma separated tags"
+          },
+          {
+            "name": "tracks",
+            "in": "query",
+            "required": false,
+            "type": "string[]",
+            "description": "Comma separated track ids"
+          },
+          {
+            "name": "SNM-AUTH",
+            "description": "User session token",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/api/spotify/search/track/{q}": {
       "get": {
         "tags": ["Spotify"],
