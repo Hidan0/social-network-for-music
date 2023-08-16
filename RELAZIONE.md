@@ -2,8 +2,6 @@
 
 Relazione del progetto *"Social Network for Music (SNM)"* per il corso di [*Programmazione e linguaggi per il web*](https://www.unimi.it/it/corsi/insegnamenti-dei-corsi-di-laurea/2022/programmazione-web-e-mobile) (A.A 2022-2023). Realizzata da Monilia Riccardo (981730).
 
-Il progetto *Social Network for Music* si propone di creare un'esperienza 
-
 
 
 ## Obiettivi
