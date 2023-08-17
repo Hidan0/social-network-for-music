@@ -4,6 +4,7 @@ Relazione del progetto *"Social Network for Music (SNM)"* per il corso di [*Prog
 
 - [Relazione](#relazione)
   - [Obiettivo](#obiettivo)
+  - [Installazione](#installazione)
   - [Struttura del progetto](#struttura-del-progetto)
     - [Stack tecnologico](#stack-tecnologico)
     - [Organizzazione codice](#organizzazione-codice)
@@ -19,6 +20,7 @@ Relazione del progetto *"Social Network for Music (SNM)"* per il corso di [*Prog
     - [Validazione dei campi](#validazione-dei-campi)
     - [Swagger](#swagger)
     - [Caching delle canzoni](#caching-delle-canzoni)
+  - [Showcase](#showcase)
 
 ## Obiettivo
 
@@ -29,6 +31,55 @@ Gli obiettivi specifici comprendono:
 1. **Gesione degli utenti**: creazione, visualizzazione, modifica, eliminazione;
 2. **Gestione delle playlist**: creazione, visualizzazione, modifica, **condivisione**, eliminazione;
 3. **Integrazione con l'API di Spotify**: utilizzare l'API di Spotify per ottenere informazioni sui brani, sugli artisti e sui generi. Consentire agli utenti di importare brani da Spotify nelle proprie playlist dell'applicazione *SNM*.
+
+
+
+## Installazione
+
+- `/backend`
+
+  - Creare o modificare il file `.env` popolando le variabili d'ambiente:
+
+    - `DB_URL`: url del server MongoDB
+      - Esempio: `mongodb://localhost/snm`
+    - `PORT`: porta su cui esporre il server
+      - Esempio: `8080`
+    - `SECRET`: stringa utilizzare nella funzione di hash della password
+      - Esempio: `PROGETTO-DI-PWM`
+    - `CLIENT_ID`: id che identifica il client, utilizzato per l'autenticazione dell'API di Spotify
+      - Esempio: `123456789qwertyuiopasdfghjklzxcv`
+    - `CLIENT_SECRET`: segreto del client, utilizzato per l'autenticazione dell'API di Spotify
+      - Esempio:  `123456789qwertyuiopasdfghjklzxcv`
+
+  - Installare le dipendenze tramite il comando:
+
+    ```bash
+    $ npm install
+    ```
+
+  - Avviare il server tramite il comando:
+
+    ```bash
+    $ npm run dev
+    ```
+
+  - Recarsi all'indirizzo `http://localhost:<PORT>`
+
+- `/frontend`
+
+  - Installare le dipendenze tramite il comando:
+
+    ```bash
+    $ npm install
+    ```
+
+  - Avviare l'applicazione tramite il comando:
+
+    ```bash
+    $ npm run dev
+    ```
+
+  - Recarsi all'indirizzo `http://localhost:5173`
 
 
 
@@ -55,6 +106,8 @@ Il progetto è stato suddiviso in una parte frontend e una parte backend, che op
 **Database**
 
 - `MongoDB`
+
+
 
 ### Organizzazione codice
 
@@ -408,3 +461,31 @@ Attraverso questo semplice meccanismo di caching, è stato possibile ottimizzare
 ...
 ```
 
+
+
+## Showcase
+
+- Login, pagina per effettuare il login
+  ![](./imgs/login_page.png)
+- Register, pagina per effettuare la registrazione
+  ![](./imgs/register_page.png)
+- Home page, pagina principale in cui vi sono le playlist pubbliche e le canzoni raccomandate
+  ![](./imgs/home_page.png)
+
+- Explore, pagina per la ricerca di canzoni e playlist
+  ![](./imgs/explore_page.png)
+
+- Library, pagina contenente le proprie playlist e quelle seguite
+  ![](./imgs/library_page.png)
+
+- User, pagina contenente le informazioni utente, le funzionalità di aggiunta preferiti e modifica dei dati
+  ![](./imgs/user_page.png)
+
+- Playlist dashboard, pagina contenente una playlist di propria creazione
+  ![](./imgs/playlist_dashboard.png) 
+
+- Playlist dashboard, pagina contenente una playlist di un altro utente
+  ![](./imgs/unfollowed_playlist.png)
+
+- Edit playlist, form per la modifica di una propria playlist
+  ![](./imgs/edit_playlist.png)
