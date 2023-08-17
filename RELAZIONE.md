@@ -79,15 +79,14 @@ Struttura cartelle (in `src/`):
 #### Overview
 
 ```mermaid
-%%{init: {"flowchart": {"htmlLabels": false}} }%%
 flowchart TD
 subgraph gbe [Backend]
-	ejs(Express.js) -- "`*exposes*`" --> api(REST API)
+	ejs(Express.js) -- exposes --> api(REST API)
 	ejs <--mongoose--> db[(MongoDB)]
 end
 ejs -- API --> sp(Spotify)
 subgraph gfe [Frontend]
-	vue(Vue.js) -- "`*uses*`" --> p(store)
+	vue(Vue.js) -- uses --> p(Pinia stores)
 	p <-- API --> api
 end
 ```
