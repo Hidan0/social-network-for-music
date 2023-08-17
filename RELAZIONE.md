@@ -2,9 +2,23 @@
 
 Relazione del progetto *"Social Network for Music (SNM)"* per il corso di [*Programmazione e linguaggi per il web*](https://www.unimi.it/it/corsi/insegnamenti-dei-corsi-di-laurea/2022/programmazione-web-e-mobile) (A.A 2022-2023). Realizzata da Monilia Riccardo (981730).
 
-
-[TOC]
-
+- [Relazione](#relazione)
+  - [Obiettivo](#obiettivo)
+  - [Struttura del progetto](#struttura-del-progetto)
+    - [Stack tecnologico](#stack-tecnologico)
+    - [Organizzazione codice](#organizzazione-codice)
+      - [Backend](#backend)
+      - [Frontend](#frontend)
+      - [Overview](#overview)
+  - [Scelte implementative](#scelte-implementative)
+    - [Autenticazione e autorizzazione](#autenticazione-e-autorizzazione)
+      - [Accesso endpoint protetti](#accesso-endpoint-protetti)
+      - [Accesso alle pagine web protette](#accesso-alle-pagine-web-protette)
+    - [Comunicazione e gestione token Spotify](#comunicazione-e-gestione-token-spotify)
+      - [Gestione dei generi](#gestione-dei-generi)
+    - [Validazione dei campi](#validazione-dei-campi)
+    - [Swagger](#swagger)
+    - [Caching delle canzoni](#caching-delle-canzoni)
 
 ## Obiettivo
 
@@ -97,7 +111,7 @@ end
 
 A seguire alcune scelete implementative significative.
 
-### Autenticazione ed autorizzazione
+### Autenticazione e autorizzazione
 
 Nel contesto dell'applicazione, il meccanismo di autenticazione e autorizzazione è strutturato attorno all'uso di un *token*, che viene trasmesso attraverso gli headers delle richieste.
 
