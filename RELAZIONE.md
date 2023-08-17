@@ -91,3 +91,167 @@ subgraph gfe [Frontend]
 end
 ```
 
+## Scelte implementative
+
+A seguire alcune scelete implementative significative.
+
+### Autenticazione ed autorizzazione
+
+Nel contesto dell'applicazione, il meccanismo di autenticazione e autorizzazione è strutturato attorno all'uso di un *token*, che viene trasmesso attraverso gli headers delle richieste.
+
+Durante la fase di registrazione di un nuovo utente, un "*salt*" viene generato in modo univoco e salvato nel database. Successivamente, la password dell'utente viene sottoposta a un processo di hash utilizzando il "*salt*" generato e una frase segreta aggiuntiva. Questa procedura incrementa la sicurezza crittografica. 
+
+```typescript
+export const randomSalt = () => crypto.randomBytes(128).toString("base64");
+export const hashPwd = (salt: string, pwd: string) => {
+  return crypto
+    .createHmac("sha256", [salt, pwd].join("/"))
+    .update(config.HASH_SECRET)
+    .digest("hex");
+};
+```
+
+Si può illustrare questa situazione attraverso un esempio pratico: considerando la password "`qwerty1234#`" e due *salt* differenti, il processo di hash produrrà risultati differenti:
+
+- utente Foo: `b996350795a5ceb13cdd64033bfea805fb70ab30b94d0e6c2fcfec69d89bcb00`
+- utente Barr: `29c1f09c396c62e1759a73d5331723c5c72df4ce93c7e56ef449afb94403af17`
+
+
+
+Nel processo di login, le credenziali dell'utente, come l'email e la password, vengono verificate. Se la password, sottoposta nuovamente ad hash, corrisponde ai dati memorizzati, un *token* viene creato utilizzando un ulteriore "*salt*" e l'ID dell'utente, contribuendo a rafforzare la sicurezza e l'identificazione dell'utente autenticato. In seguito, il client assumerà la responsabilità di conservare il *token* all'interno dello store dell'applicazione. 
+
+```typescript
+...
+const salt = randomSalt();
+user.auth.sessionToken = hashPwd(salt, user._id.toString());
+await user.save();
+
+res.setHeader("SNM-AUTH", user.auth.sessionToken);
+
+return res.status(200).json(user).end();
+...
+```
+
+#### Accesso endpoint protetti
+
+Nel contesto delle interazioni con l'API, gran parte degli endpoint è soggetta a una protezione tramite autenticazione, il cui controllo è affidato al middleware denominato `isAuthenticated`. Questo middleware si incarica di verificare la presenza del token nell'header della richiesta (`SNM-AUTH`) e di effettuare la validazione dell'utente associato al token stesso.
+
+```typescript
+export const isAuthenticated = async (
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) => {
+  try {
+    const sessionToken = req.header("SNM-AUTH");
+
+    if (!sessionToken) {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+
+    const existingUser = await getUserBySessionToken(sessionToken);
+    if (!existingUser) {
+      return res.status(403).json({ message: "Session expired" });
+    }
+
+    req.identity = existingUser;
+    next();
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+```
+
+Oltre all'autenticazione, molti degli endpoint richiedono un ulteriore livello di controllo, in particolare per dichiarare la "possessione" di una risorsa o per ottenere l'autorizzazione alla modifica di una risorsa specifica. Questi aspetti vengono gestiti attraverso endpoint appositi. Questo processo di gestione delle autorizzazioni si basa su un sistema di verifica che valuta il legame tra l'utente e la risorsa in questione, garantendo che solo gli utenti autorizzati possano accedere e operare su determinate risorse.
+
+```typescript
+export const isPlaylistAuthor = async (
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const userId = req.identity._id;
+
+    if (!id) {
+      return res.status(400).json({ message: "Playlist id is required" });
+    }
+
+    const playlist = await getPlaylistById(id);
+    if (!playlist) {
+      return res.status(404).json({ message: "Playlist not found" });
+    }
+
+    if (playlist.author.toString() !== userId.toString()) {
+      return res.status(403).json({
+        message: "You are not the author of the playlist",
+      });
+    }
+
+    req.playlist = playlist;
+    next();
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+```
+
+Di seguito un esempio di endpoint non protetto e protetto:
+
+- Non protetto:
+
+  ```typescript
+  authRouter.post("/auth/register", register);
+  ```
+
+- Protetto:
+
+  ```typescript
+  playlistRouter.patch(
+    "/playlists/:id",
+    isAuthenticated,
+    isPlaylistAuthor,
+    editPlaylist
+  );
+  ```
+
+#### Accesso alle pagine web protette
+
+All'interno dell'applicazione, si è stabilito che le pagine accessibili senza la necessità di autenticazione siano esclusivamente quelle relative alla registrazione e al login. Per tutte le altre pagine che richiedono un livello di autenticazione, è stato implementato un meccanismo di controllo preventivo. Prima di consentire qualsiasi navigazione a tali pagine, si verifica la validità del *token* dell'utente, qualora presente. Questa verifica viene eseguita utilizzando l'endpoint denominato `api/auth/verify`. In tal modo, si garantisce che solamente gli utenti con *token* validi abbiano l'autorizzazione a accedere alle pagine riservate.
+
+```typescript
+// Router
+router.beforeEach(async (to, _from) => {
+  const nextPage = getByRoute(to);
+
+  if (nextPage?.meta?.requiresAuth) {
+    const $user = useUserStore();
+    const isValid = await $user.verify();
+    if (!isValid) {
+      router.push({ name: "login" });
+    }
+  }
+});
+```
+
+```typescript
+// User Store
+...
+async verify(): Promise<boolean> {
+      if (!this.token) return false;
+
+      try {
+        const res = await axios.get("/auth/verify", {
+          headers: {
+            "SNM-AUTH": this.token,
+          },
+        });
+		...
+}
+...
+```
+
+### Comunicazione e gestione token Spotify
