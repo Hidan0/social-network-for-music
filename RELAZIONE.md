@@ -84,7 +84,7 @@ subgraph gbe [Backend]
 	ejs(Express.js) -- exposes --> api(REST API)
 	ejs <--mongoose--> db[(MongoDB)]
 end
-ejs -- API --> sp(Spotify)
+ejs -- API --> sp(Spotify Web API)
 subgraph gfe [Frontend]
 	vue(Vue.js) -- uses --> p(Pinia stores)
 	p <-- API --> api
@@ -131,6 +131,8 @@ res.setHeader("SNM-AUTH", user.auth.sessionToken);
 return res.status(200).json(user).end();
 ...
 ```
+
+
 
 #### Accesso endpoint protetti
 
@@ -218,6 +220,8 @@ Di seguito un esempio di endpoint non protetto e protetto:
   );
   ```
 
+
+
 #### Accesso alle pagine web protette
 
 All'interno dell'applicazione, si è stabilito che le pagine accessibili senza la necessità di autenticazione siano esclusivamente quelle relative alla registrazione e al login. Per tutte le altre pagine che richiedono un livello di autenticazione, è stato implementato un meccanismo di controllo preventivo. Prima di consentire qualsiasi navigazione a tali pagine, si verifica la validità del *token* dell'utente, qualora presente. Questa verifica viene eseguita utilizzando l'endpoint denominato `api/auth/verify`. In tal modo, si garantisce che solamente gli utenti con *token* validi abbiano l'autorizzazione a accedere alle pagine riservate.
@@ -254,4 +258,137 @@ async verify(): Promise<boolean> {
 ...
 ```
 
+
+
 ### Comunicazione e gestione token Spotify
+
+Per stabilire la comunicazione con Spotify, è stato adottato il meccanismo denominato "[Client Credentials Flow](https://developer.spotify.com/documentation/web-api/tutorials/client-credentials-flow)." Questo flusso è utilizzato per l'autenticazione tra server e server, come dichiarato nella documentazione di Spotify. Di conseguenza, le credenziali riservate come `client_id` e `client_secret` sono conservate nel backend dell'applicazione, mantenendole protette e lontane dalla visibilità esterna.
+
+Nel contesto di questa applicazione, il backend si occupa di ottenere e utilizzare il *token* di accesso da Spotify, fornendo all'applicazione una modalità sicura e affidabile per interagire con i dati e i servizi di Spotify.
+
+La gestione del token avviene attraverso il seguente processo:
+
+1. Gli endpoint che interagiscono con Spotify richiedono il token di accesso mediante l'utilizzo della funzione `getSpotifyToken`.
+2. La funzione `getSpotifyToken` verifica inizialmente se il token è già presente. Se è presente, il token viene restituito direttamente.
+3. Nel caso in cui il token non sia presente, la funzione `getSpotifyToken` avvia una richiesta di fetch per ottenere il token di accesso da Spotify.
+4. Al fine di ottimizzare l'utilizzo del token, viene impostato un timer. Questo timer è programmato per eliminare il token due minuti prima della sua scadenza. Ciò permette di assicurare che l'accesso alle risorse di Spotify sia continuo e non venga interrotto a causa della scadenza del token.
+
+```typescript
+let access_token: string | undefined;
+let expires_in = 3480; // 1h - 2m
+
+export const getSpotifyToken = async () => {
+  if (!access_token) {
+    const { access_token: token } = await fetchSpotifyToken();
+    access_token = token;
+
+    setTimeout(clearToken, expires_in * 1000);
+  }
+  return access_token;
+};
+```
+
+
+
+#### Gestione dei generi
+
+L'ottenimento dei generi musicali disponibili è stato un processo semplice, il che ha agevolato l'implementazione di una funzionalità che consente agli utenti di selezionare i propri generi musicali preferiti. 
+
+Tuttavia, l'ottenimento dei generi musicali specifici di singole canzoni e artisti è risultato praticamente impossible. Anche se la documentazione dell'API di Spotify forniva indicazioni in merito, la reale implementazione di questo processo non forniva le informazioni indicate. Di conseguenza, non è stato possibile realizzare le raccomandazioni delle playlist in base ai generi delle canzoni contenute al suo interno.
+
+
+
+### Validazione dei campi
+
+In entrambi il backend e il frontend, è stata adottata la libreria "zod" per effettuare la validazione dei campi. Tuttavia, sono state adottate alcune differenze nella definizione degli oggetti all'interno delle rispettive parti dell'applicazione, al fine di conseguire risultati specifici.
+
+Nel frontend, le definizioni degli oggetti sono state rese più specifiche per fornire una sensazione di maggiore responsività. Ad esempio, per la validazione delle password, è stata implementata una definizione più dettagliata che richiede che le password siano lunghe da 8 a 40 caratteri e contengano almeno una lettera, un numero e un carattere speciale.
+
+Esempio dello schema della password nel frontend:
+
+````typescript
+const passwordSchema = z
+  .string()
+  .min(8, { message: "Password must be at least 8 characters long" })
+  .max(40, { message: "Password must be less than 40 characters long" })
+  .regex(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&^])[A-Za-z\d@$!%*#?&^]{8,40}$/, {
+    message:
+      "Password must contain at least one letter, number, and special character",
+  });
+````
+
+ Nel backend, la definizione degli oggetti ha un focus più specifico sulla conformità a determinate regole predefinite. Ad esempio, nello schema della password nel backend, la validazione avviene mediante l'uso di una regex predefinita e un messaggio associato.
+
+Esempio dello schema della password nel backend:
+
+```typescript
+const password = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&^])[A-Za-z\d@$!%*#?&^]{8,40}$/;
+const passwordDescr = "8-40 characters, at least one uppercase, one lowercase, one number and one special character (e.g. @$!%*#?&^)";
+
+const registerUserSchema = z.object({
+  ...
+  password: z.string().regex(regex.password, { message: regex.passwordDescr }),
+});
+```
+
+
+
+### Swagger
+
+L'interfaccia Swagger è stata realizzata utilizzando la libreria `swagger-ui-express`. Per quanto riguarda la definizione iniziale della specifica, ci si è avvalsi di `swagger-autogen`, un'opzione che ha consentito di automatizzare il processo di riconoscimento degli endpoint dell'applicazione.
+
+Nonostante il vantaggio dell'automazione, è emerso che alcuni endpoint non potevano essere completamente definiti. Questa limitazione ha impedito la piena e accurata definizione delle informazioni riguardanti tali endpoint.
+
+Una possibile ipotesi avanzata è che il problema potesse essere legato all'ambiente di runtime "`ts-node`", ma questa congettura non è stata confermata e rappresenta solamente una supposizione senza certezze.
+
+Di conseguenza, per risolvere la situazione e garantire una documentazione esaustiva, è stato necessario procedere con la creazione manuale della specifica mancante per gli endpoint coinvolti.
+
+
+
+### Caching delle canzoni
+
+Considerando l'importanza cruciale della gestione dei dati delle canzoni e la frequenza elevata dei download associati, è stata introdotta un'implementazione di caching relativamente semplice.
+
+La logica del caching si basa su un'approccio che considera l'immutabilità dei dati delle canzoni nel breve periodo. In pratica, è stato sviluppato un meccanismo che sfrutta una *hashmap* conservata nello store locale. Questa hashmap memorizza gli ID delle canzoni che sono state precedentemente scaricate e salvate nella cache.
+
+Quando viene fornito un ID di una canzone, l'applicazione esegue una verifica nella hashmap locale. Se l'ID è presente, ciò indica che la canzone è già presente nella cache. In questo caso, l'applicazione è in grado di restituire direttamente i dati dalla cache, evitando così un ulteriore download da parte dell'API di Spotify. Al contrario, se l'ID non è presente nella hashmap, l'applicazione procede con il download dei dati della canzone attraverso l'API di Spotify.
+
+Attraverso questo semplice meccanismo di caching, è stato possibile ottimizzare l'efficienza nell'accesso ai dati delle canzoni, evitando download ridondanti e ottimizzando le performance dell'applicazione nell'ambito della gestione delle risorse musicali.
+
+```typescript
+// Playlist store
+...
+    _checkCachedTracks(trackIds: { ids: string[] }): TrackData[] {
+      let tracks: TrackData[] = [];
+
+      if (store.has("tracks")) {
+        const cachedTracks = store.get("tracks") as TrackCache;
+
+        if (Object.keys(cachedTracks).length === 0) {
+          return [];
+        }
+
+        for (let i = 0; i < trackIds.ids.length; i++) {
+          const track = cachedTracks[trackIds.ids[i]];
+          if (track !== undefined) {
+            tracks.push(track);
+            trackIds.ids.splice(i, 1);
+          }
+        }
+      }
+      return tracks;
+    },
+    _cacheTrack(track: TrackData): void {
+      if (store.has("tracks")) {
+        const cachedTracks = store.get("tracks") as TrackCache;
+        cachedTracks[track.id] = track;
+        store.set("tracks", cachedTracks);
+      } else {
+        const cachedTracks = {} as TrackCache;
+        cachedTracks[track.id] = track;
+        store.set("tracks", cachedTracks);
+      }
+    },
+...
+```
+
