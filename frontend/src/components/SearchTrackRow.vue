@@ -69,6 +69,7 @@ const addToPlaylist = async (id: string, title: string) => {
       <ul class="dropdown-menu">
         <li v-for="playlist in userPlaylists">
           <a
+            style="cursor: pointer"
             class="dropdown-item"
             @click="addToPlaylist(playlist.id, playlist.title)"
             >{{ playlist.title }}</a
