@@ -31,6 +31,7 @@ Gli obiettivi specifici comprendono:
 1. **Gesione degli utenti**: creazione, visualizzazione, modifica, eliminazione;
 2. **Gestione delle playlist**: creazione, visualizzazione, modifica, **condivisione**, eliminazione;
 3. **Integrazione con l'API di Spotify**: utilizzare l'API di Spotify per ottenere informazioni sui brani, sugli artisti e sui generi. Consentire agli utenti di importare brani da Spotify nelle proprie playlist dell'applicazione *SNM*.
+3. **Realizzazione di un'API RESTful**
 
 
 
@@ -44,7 +45,7 @@ Gli obiettivi specifici comprendono:
       - Esempio: `mongodb://localhost/snm`
     - `PORT`: porta su cui esporre il server
       - Esempio: `8080`
-    - `SECRET`: stringa utilizzare nella funzione di hash della password
+    - `SECRET`: stringa da utilizzare nella funzione di hash della password
       - Esempio: `PROGETTO-DI-PWM`
     - `CLIENT_ID`: id che identifica il client, utilizzato per l'autenticazione dell'API di Spotify
       - Esempio: `123456789qwertyuiopasdfghjklzxcv`
@@ -166,7 +167,7 @@ A seguire alcune scelete implementative significative.
 
 ### Autenticazione e autorizzazione
 
-Nel contesto dell'applicazione, il meccanismo di autenticazione e autorizzazione è strutturato attorno all'uso di un *token*, che viene trasmesso attraverso gli headers delle richieste.
+Il meccanismo di autenticazione e autorizzazione è strutturato attorno all'uso di un *token*, che viene trasmesso attraverso gli headers delle richieste.
 
 Durante la fase di registrazione di un nuovo utente, un "*salt*" viene generato in modo univoco e salvato nel database. Successivamente, la password dell'utente viene sottoposta a un processo di hash utilizzando il "*salt*" generato e una frase segreta aggiuntiva. Questa procedura incrementa la sicurezza crittografica. 
 
