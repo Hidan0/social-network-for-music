@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="135.46667mm"
+   height="135.48096mm"
+   viewBox="0 0 135.46667 135.48096"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.3 (0e150ed6c4, 2023-07-21)"
+   sodipodi:docname="icon.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="0.7786055"
+     inkscape:cx="269.07079"
+     inkscape:cy="351.91121"
+     inkscape:window-width="1916"
+     inkscape:window-height="1040"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-33.62213,-55.404563)">
+    <!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+    <path
+       d="m 165.67567,57.085727 c 2.14313,1.5875 3.41313,4.1275 3.41313,6.799792 v 19.05 69.850001 c 0,11.69458 -11.37709,21.16666 -25.4,21.16666 -14.02292,0 -25.4,-9.47208 -25.4,-21.16666 0,-11.69459 11.37708,-21.16667 25.4,-21.16667 2.96333,0 5.82083,0.42333 8.46666,1.21708 V 94.312602 L 84.42213,114.6326 v 55.08625 c 0,11.69458 -11.377083,21.16667 -25.4,21.16667 -14.022917,0 -25.4,-9.47209 -25.4,-21.16667 0,-11.69458 11.377083,-21.16667 25.4,-21.16667 2.963333,0 5.820833,0.42334 8.466667,1.21709 V 108.33552 89.285519 c 0,-3.730625 2.460625,-7.037917 6.0325,-8.122709 l 84.666663,-25.4 c 2.56646,-0.767291 5.34459,-0.291041 7.48771,1.322917 z"
+       id="path1"
+       style="fill:#1ed760;fill-opacity:1;stroke-width:0.264583" />
+  </g>
+</svg>
