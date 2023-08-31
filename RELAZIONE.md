@@ -39,17 +39,17 @@ Gli obiettivi specifici comprendono:
 
 - `/backend`
 
-  - Creare o modificare il file `.env` popolando le variabili d'ambiente:
+  - Creare o modificare il file `.env` popolando le seguenti variabili d'ambiente:
 
-    - `DB_URL`: url del server MongoDB
+    - `DB_URL`: l'url del server MongoDB
       - Esempio: `mongodb://localhost/snm`
-    - `PORT`: porta su cui esporre il server
+    - `PORT`: la porta su cui esporre il server
       - Esempio: `8080`
-    - `SECRET`: stringa da utilizzare nella funzione di hash della password
+    - `SECRET`: la stringa da utilizzare nella funzione di hash della password 
       - Esempio: `PROGETTO-DI-PWM`
-    - `CLIENT_ID`: id che identifica il client, utilizzato per l'autenticazione dell'API di Spotify
+    - `CLIENT_ID`: l'id che identifica il client, utilizzato per l'autenticazione dell'API di Spotify
       - Esempio: `123456789qwertyuiopasdfghjklzxcv`
-    - `CLIENT_SECRET`: segreto del client, utilizzato per l'autenticazione dell'API di Spotify
+    - `CLIENT_SECRET`: il *segreto* del client, utilizzato per l'autenticazione dell'API di Spotify
       - Esempio:  `123456789qwertyuiopasdfghjklzxcv`
 
   - Installare le dipendenze tramite il comando:
@@ -64,7 +64,7 @@ Gli obiettivi specifici comprendono:
     $ npm run dev
     ```
 
-  - Recarsi all'indirizzo `http://localhost:<PORT>`
+  - Recarsi all'indirizzo `http://localhost:<PORT>/api/docs` per visualizzare lo Swagger
 
 - `/frontend`
 
@@ -80,7 +80,7 @@ Gli obiettivi specifici comprendono:
     $ npm run dev
     ```
 
-  - Recarsi all'indirizzo `http://localhost:5173`
+  - Recarsi all'indirizzo `http://localhost:5173/login` o `http://localhost:5173/register`  
 
 
 
@@ -151,13 +151,13 @@ Struttura cartelle (in `src/`):
 ```mermaid
 flowchart TD
 subgraph gbe [Backend]
-	ejs(Express.js) -- exposes --> api(REST API)
+	ejs(Express.js) -- "'exposes'" --> api(REST API)
 	ejs <--mongoose--> db[(MongoDB)]
 end
-ejs -- API --> sp(Spotify Web API)
+ejs -- axios --> sp(Spotify Web API)
 subgraph gfe [Frontend]
-	vue(Vue.js) -- uses --> p(Pinia stores)
-	p <-- API --> api
+	vue(Vue.js) -- uses --> p(Pinia)
+	p <-- axios --> api
 end
 ```
 
@@ -169,7 +169,7 @@ A seguire alcune scelete implementative significative.
 
 Il meccanismo di autenticazione e autorizzazione è strutturato attorno all'uso di un *token*, che viene trasmesso attraverso gli headers delle richieste.
 
-Durante la fase di registrazione di un nuovo utente, un "*salt*" viene generato in modo univoco e salvato nel database. Successivamente, la password dell'utente viene sottoposta a un processo di hash utilizzando il "*salt*" generato e una frase segreta aggiuntiva. Questa procedura incrementa la sicurezza crittografica. 
+Durante la fase di registrazione di un nuovo utente, un "*salt*" viene generato in modo univoco e salvato nel database. Successivamente, la password dell'utente viene sottoposta a un processo di hash utilizzando il "*salt*" generato e una frase segreta aggiuntiva (variabile `SECRET`). Questa procedura incrementa la sicurezza crittografica. 
 
 ```typescript
 export const randomSalt = () => crypto.randomBytes(128).toString("base64");
@@ -185,8 +185,6 @@ Si può illustrare questa situazione attraverso un esempio pratico: considerando
 
 - utente Foo: `b996350795a5ceb13cdd64033bfea805fb70ab30b94d0e6c2fcfec69d89bcb00`
 - utente Barr: `29c1f09c396c62e1759a73d5331723c5c72df4ce93c7e56ef449afb94403af17`
-
-
 
 Nel processo di login, le credenziali dell'utente, come l'email e la password, vengono verificate. Se la password, sottoposta nuovamente ad hash, corrisponde ai dati memorizzati, un *token* viene creato utilizzando un ulteriore "*salt*" e l'ID dell'utente, contribuendo a rafforzare la sicurezza e l'identificazione dell'utente autenticato. In seguito, il client assumerà la responsabilità di conservare il *token* all'interno dello store dell'applicazione. 
 
@@ -387,7 +385,7 @@ const passwordSchema = z
   });
 ````
 
- Nel backend, la definizione degli oggetti ha un focus più specifico sulla conformità a determinate regole predefinite. Ad esempio, nello schema della password nel backend, la validazione avviene mediante l'uso di una regex predefinita e un messaggio associato.
+Nel backend, la definizione degli oggetti ha un focus più specifico sulla conformità a determinate regole predefinite. Ad esempio, nello schema della password nel backend, la validazione avviene mediante l'uso di una regex predefinita e un messaggio associato.
 
 Esempio dello schema della password nel backend:
 
