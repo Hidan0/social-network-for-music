@@ -165,8 +165,10 @@ export default defineStore("playlist", {
     _cacheTrack(track: TrackData): void {
       if (store.has("tracks")) {
         const cachedTracks = store.get("tracks") as TrackCache;
-        cachedTracks[track.id] = track;
-        store.set("tracks", cachedTracks);
+        if (cachedTracks[track.id] === undefined) {
+          cachedTracks[track.id] = track;
+          store.set("tracks", cachedTracks);
+        }
       } else {
         const cachedTracks = {} as TrackCache;
         cachedTracks[track.id] = track;
@@ -175,14 +177,18 @@ export default defineStore("playlist", {
     },
     async getTracks(trackIds: string[]): Promise<TrackData[]> {
       try {
-        let tracks: TrackData[] = this._checkCachedTracks({ ids: trackIds });
+        let _trackIds = Object.assign([], trackIds);
+        let tracks: TrackData[] = this._checkCachedTracks({ ids: _trackIds });
 
         if (trackIds.length > 0) {
-          const res = await axios.get(`/spotify/tracks/${trackIds.join(",")}`, {
-            headers: {
-              "SNM-AUTH": $user.token,
-            },
-          });
+          const res = await axios.get(
+            `/spotify/tracks/${_trackIds.join(",")}`,
+            {
+              headers: {
+                "SNM-AUTH": $user.token,
+              },
+            }
+          );
 
           res.data.tracks.forEach((track: any) => {
             const t: TrackData = {
