@@ -63,6 +63,13 @@ const showTags = computed({
 });
 const editIsPrivate = ref($playlist.isPrivate!);
 
+const closeModal = () => {
+  const btn = document.querySelector<HTMLButtonElement>("#close-modal");
+  if (btn != null) {
+    btn.click();
+  }
+};
+
 const isSubmitting = ref(false);
 
 const onSubmit = async () => {
@@ -132,6 +139,8 @@ const onSubmit = async () => {
       dismissible: true,
     });
 
+    closeModal();
+
     emit("updated");
   } catch (error: any) {
     vuert.emit({
@@ -148,18 +157,13 @@ const onSubmit = async () => {
 </script>
 
 <template>
-  <div
-    class="modal fade"
-    :id="id"
-    data-bs-backdrop="static"
-    data-bs-keyboard="false"
-    tabindex="-1"
-  >
+  <div class="modal fade" :id="id" tabindex="-1">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
           <h1 class="modal-title fs-5" :id="`${id}Title`">Edit playlist</h1>
           <button
+            id="close-modal"
             type="button"
             class="btn-close"
             data-bs-dismiss="modal"
